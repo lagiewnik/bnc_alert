@@ -60,6 +60,7 @@ function sendEmail(param) {
     });
 }
 
+
 module.exports = {
     sendEmail
 }
