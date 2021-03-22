@@ -14,7 +14,7 @@ app.use(express.static('public'))
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended: true}))
 
-app.listen(process.env.PORT||3000)
+app.listen(process.env.PORT||80)
 // app.use( (req, resp) => {
 //     resp.render('AlertGenerator')
 // })

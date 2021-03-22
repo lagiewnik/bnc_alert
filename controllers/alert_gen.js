@@ -5,6 +5,11 @@ const filePath = './config/alerts.json';
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const mailSender = require('../sender/mailer')
 const telegramSend = require('../sender/telegram')
+const Promise = require('bluebird')
+const AppDAO = require('../db/dao')
+const AlertsRepo = require('../db/alert_repo')
+const dao = new AppDAO('./db/alerts.sqlite')
+
 
 var gv_allsymprice = {};
 
@@ -40,126 +45,139 @@ function getallsymbolsprices() {
 }
 
 function generatealerts() {
+    const alerts_repo = new AlertsRepo(dao)
     alertCfgChange = 0
+    // try {
+    //     dataAlerts = JSON.parse(fs.readFileSync(filePath));
+    // } catch (err) {
+    //     console.log(err)
+    //     // handle your file not found (or other error) here
+    // }
     try {
-        dataAlerts = JSON.parse(fs.readFileSync(filePath));
+        alerts_repo.getAll().then(dbd=>{dataAlerts=dbd;
+
+            dataAlerts.forEach(function (json) {
+                var symbol1 = json.symbol.replace(/\s+/g, "");
+                var symbol = json.symbol.replace(/\s+/g, "");
+                //var symbol = symbol1.substr(1,symbol1.length);//remove leading spaces
+                var alerton = json.alertOn.trim();
+                var currencytype = json.currency.trim();
+                var alertoptions = json.condition.trim();
+                var price1 = parseFloat(json.price1);
+                var price2 = parseFloat(json.price2);
+                var trid = json.trid
+                var gotSend = json.gotSend
+                console.log(symbol + " " + symbol1 + " " + alerton + " " + currencytype + " " + alertoptions + " " + price1 + " " + price2 + " gotSend: " + gotSend)
+        
+                var fp1, fp2, fp;
+                if (currencytype == 'USDT') {
+                    if (symbol.substr(symbol.length - 4, symbol.length) == 'USDT') {
+                        fp1 = gv_allsymprice[symbol];
+                        fp2 = 1;
+                    }
+                    else {
+                        fp1 = gv_allsymprice[symbol];
+                        fp2 = gv_allsymprice[symbol.substr(symbol.length - 3, symbol.length) + 'USDT'];
+                    }
+                }
+                else {
+                    if (symbol.substr(symbol.length - 4, symbol.length) == 'USDT') {
+                        fp1 = gv_allsymprice[symbol];
+                        fp2 = 1;
+                    }
+                    else {
+                        fp1 = 1;
+                        fp2 = gv_allsymprice[symbol.substr(symbol.length - 3, symbol.length) + 'USDT'];
+                    }
+                }
+        
+                fp = fp1 * fp2;
+                console.log("fp: "+ fp + " FP1: " + fp1+ " fP2: " + fp2)
+        
+                if (!price2) {
+                    if (alertoptions == 'Greater Than') {
+                        console.log("FP: " + fp + "Price1: " + price1)
+                        if (fp >= price1) {
+                            if(gotSend==0){
+                            alarmSend(symbol, price1, price2, fp, alertoptions,trid)
+                            }
+                           // alert('Price of ' + symbol + ' is greater than ' + price1 + '. Price is: ' + fp);
+                        }
+                        else{
+                            if (gotSend != 0){
+                                console.log("zmien wasSend =0 dla: " + symbol)
+                                setGotSend(trid, 0)}
+                        }
+                    }
+                    else {
+                        if (fp <= price1) {
+                            if(gotSend==0)
+                            {
+                                alarmSend(symbol, price1, price2, fp, alertoptions,trid)
+                            }
+                            //alert('Price of ' + symbol + ' is less than ' + price1);
+                        }
+                        else {
+                            if (gotSend != 0){
+                                console.log("zmien wasSend =0 dla: " + symbol)
+                                setGotSend(trid, 0)}
+                        }
+                    }
+        
+                }
+                else {
+                    if (alertoptions == 'Inside Channel') {
+                        if (fp >= price1 && fp <= price2) {
+                            if(gotSend==0){
+                            alarmSend(symbol, price1, price2, fp, alertoptions,trid)
+                            }
+                            //alert('Price of ' + symbol + ' is Inside channel ' + price1 + ' & ' + price2);
+                        }
+                        else {
+                            if (gotSend != 0){
+                                console.log("zmien wasSend =0 dla: " + symbol)
+                                setGotSend(trid, 0)}
+                        }
+                    }
+                    else {
+                        if (fp <= price1 || fp >= price2) {
+                            if(gotSend==0){
+                                alarmSend(symbol, price1, price2, fp, alertoptions,trid)
+                            }
+                            //alert('Price of ' + symbol + ' is Outside channel ' + price1 + ' & ' + price2);
+                        }
+                        else {
+                            if (gotSend != 0){
+                                console.log("zmien wasSend =0 dla: " + symbol)
+                                setGotSend(trid, 0)}
+                        }
+                    }
+        
+                }
+        
+            });
+            //resp.render("AlertGenerator", {alerts: datadb})
+            //console.log("Po promisie")
+            //console.log(datadb)
+        });
     } catch (err) {
         console.log(err)
         // handle your file not found (or other error) here
     }
-
-    dataAlerts.forEach(function (json) {
-        var symbol1 = json.symbol.replace(/\s+/g, "");
-        var symbol = json.symbol.replace(/\s+/g, "");
-        //var symbol = symbol1.substr(1,symbol1.length);//remove leading spaces
-        var alerton = json.alertOn.trim();
-        var currencytype = json.currency.trim();
-        var alertoptions = json.condition.trim();
-        var price1 = parseFloat(json.price1);
-        var price2 = parseFloat(json.price2);
-        var trid = json.trid
-        var gotSend = json.gotSend
-        console.log(symbol + " " + symbol1 + " " + alerton + " " + currencytype + " " + alertoptions + " " + price1 + " " + price2 + " gotSend: " + gotSend)
-
-        var fp1, fp2, fp;
-        if (currencytype == 'USDT') {
-            if (symbol.substr(symbol.length - 4, symbol.length) == 'USDT') {
-                fp1 = gv_allsymprice[symbol];
-                fp2 = 1;
-            }
-            else {
-                fp1 = gv_allsymprice[symbol];
-                fp2 = gv_allsymprice[symbol.substr(symbol.length - 3, symbol.length) + 'USDT'];
-            }
-        }
-        else {
-            if (symbol.substr(symbol.length - 4, symbol.length) == 'USDT') {
-                fp1 = gv_allsymprice[symbol];
-                fp2 = 1;
-            }
-            else {
-                fp1 = 1;
-                fp2 = gv_allsymprice[symbol.substr(symbol.length - 3, symbol.length) + 'USDT'];
-            }
-        }
-
-        fp = fp1 * fp2;
-        console.log("fp: "+ fp + " FP1: " + fp1+ " fP2: " + fp2)
-
-        if (!price2) {
-            if (alertoptions == 'Greater Than') {
-                console.log("FP: " + fp + "Price1: " + price1)
-                if (fp >= price1) {
-                    if(gotSend==0){
-                    alarmSend(symbol, price1, price2, fp, alertoptions,trid)
-                    }
-                   // alert('Price of ' + symbol + ' is greater than ' + price1 + '. Price is: ' + fp);
-                }
-                else{
-                    if (gotSend != 0){
-                        console.log("zmien wasSend =0 dla: " + symbol)
-                        setGotSend(trid, 0)}
-                }
-            }
-            else {
-                if (fp <= price1) {
-                    if(gotSend==0)
-                    {
-                        alarmSend(symbol, price1, price2, fp, alertoptions,trid)
-                    }
-                    //alert('Price of ' + symbol + ' is less than ' + price1);
-                }
-                else {
-                    if (gotSend != 0){
-                        console.log("zmien wasSend =0 dla: " + symbol)
-                        setGotSend(trid, 0)}
-                }
-            }
-
-        }
-        else {
-            if (alertoptions == 'Inside Channel') {
-                if (fp >= price1 && fp <= price2) {
-                    if(gotSend==0){
-                    alarmSend(symbol, price1, price2, fp, alertoptions,trid)
-                    }
-                    //alert('Price of ' + symbol + ' is Inside channel ' + price1 + ' & ' + price2);
-                }
-                else {
-                    if (gotSend != 0){
-                        console.log("zmien wasSend =0 dla: " + symbol)
-                        setGotSend(trid, 0)}
-                }
-            }
-            else {
-                if (fp <= price1 || fp >= price2) {
-                    if(gotSend==0){
-                        alarmSend(symbol, price1, price2, fp, alertoptions,trid)
-                    }
-                    //alert('Price of ' + symbol + ' is Outside channel ' + price1 + ' & ' + price2);
-                }
-                else {
-                    if (gotSend != 0){
-                        console.log("zmien wasSend =0 dla: " + symbol)
-                        setGotSend(trid, 0)}
-                }
-            }
-
-        }
-
-    });
+    
     console.log('koniec petrli')
-    console.log(dataAlerts)
+    // console.log(dataAlerts)
     console.log("Czey zmiana parametrów wysłania: " + alertCfgChange)
     if(alertCfgChange == 1) {
         console.log("zapis pliku configu po zmianie")
         console.log(dataAlerts)
-        fs.writeFileSync(filePath, JSON.stringify(dataAlerts), null, 2)
+        //fs.writeFileSync(filePath, JSON.stringify(dataAlerts), null, 2)
         alertCfgChange = 0
     }
 }
 
 function alarmSend (symbol, price1, price2, currentPrice, condition, trid) {
+    
     const sendParams = {
         'symbol': symbol, 
         'price1':price1, 
@@ -176,6 +194,16 @@ function alarmSend (symbol, price1, price2, currentPrice, condition, trid) {
 }
 
 function setGotSend(trid, newGotSend) {
+    const alerts_repo = new AlertsRepo(dao)
+    try {
+        alerts_repo.update({trid, newGotSend }).then(
+            console.log("zmiana parametru gotSend na: "+ newGotSend + " dla: " + trid )
+        )
+    } catch (err) {
+        console.log(err)
+        // handle your file not found (or other error) here
+    }
+
     for (var i = 0; i < dataAlerts.length; i++) {
       if (dataAlerts[i].trid === trid) {
         dataAlerts[i].gotSend = newGotSend;

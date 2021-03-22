@@ -94,7 +94,7 @@
             <tbody>
                 <% if (alerts.length> 0) { %>
                     <% alerts.forEach(alert=> { %>
-                        <tr id=<%= alert.trid %>>
+                        <tr id=<%=alert.trid %>>
                             <td><input type="checkbox" name="record"></td>
                             <td><span class="dpsym">
                                     <%= alert.symbol %>
@@ -270,24 +270,26 @@
             }
             const trid = Date.now();
             const createEndpoint = "/"
-            var markup = "<tr id="+ trid + "><td><input type='checkbox' name='record'></td><td>" + '<span class="dpsym">' + symbol + '</span></td><td><span class="dpaon">' + alerton + '</span></td><td><span class="dpcurtype">' + currencytype + '</span></td><td><span class="dpcond">' + alertoptions + '</span></td><td><span class="dpprice1">' + price1 + '</span></td><td><span class="dpprice2">' + price2 + "</span></td></tr>";
+            var markup = "<tr id=" + trid + "><td><input type='checkbox' name='record'></td><td>" + '<span class="dpsym">' + symbol + '</span></td><td><span class="dpaon">' + alerton + '</span></td><td><span class="dpcurtype">' + currencytype + '</span></td><td><span class="dpcond">' + alertoptions + '</span></td><td><span class="dpprice1">' + price1 + '</span></td><td><span class="dpprice2">' + price2 + "</span></td></tr>";
             $("#dptable tbody").append(markup);
-            dataToSend = JSON.stringify({"trid": trid, "symbol": symbol,"alertOn": alerton, "currency": currencytype, "condition": alertoptions,"price1": price1, "price2": price2, "gotSend":0});
+            dataToSend = JSON.stringify({ "trid": trid, "symbol": symbol, "alertOn": alerton, "currency": currencytype, "condition": alertoptions, "price1": price1, "price2": price2, "gotSend": 0 });
             // console.log("datasend create alert:");
             // console.log(dataToSend);
             fetch('/' + trid, {
                 method: "POST",
-                headers: { 'Accept': 'application/json',
-                            'Content-Type': 'application/json'},
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
                 body: dataToSend
             }).then((response) => response.json())
-                        .then((data) => {
-                            console.log(data)
-                            window.location.href = data.redirect
-                        })
-                        .catch((err) => {
-                            console.log(err)
-                        })
+                .then((data) => {
+                    console.log(data)
+                    window.location.href = data.redirect
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
         });
 
         // Find and remove selected table rows
@@ -297,7 +299,7 @@
                 if ($(this).is(":checked")) {
                     const idDelete = $(this).parents("tr").attr('id')
                     //$(this).parents("tr").remove();
-                    const deleteEndpoint = '/'+ idDelete
+                    const deleteEndpoint = '/' + idDelete
                     fetch(deleteEndpoint, {
                         method: "DELETE"
                     }).then((response) => response.json())
@@ -376,16 +378,16 @@
         ourRequest1.open('GET', url, true);
         ourRequest1.onload = function () {
             ourData = JSON.parse(ourRequest1.responseText);
-            ourData.sort(function(a,b){
-                if ( a.symbol < b.symbol ){
-    return -1;
-  }
-  if ( a.symbol > b.symbol ){
-    return 1;
-  }
-  return 0;
-    }
-)
+            ourData.sort(function (a, b) {
+                if (a.symbol < b.symbol) {
+                    return -1;
+                }
+                if (a.symbol > b.symbol) {
+                    return 1;
+                }
+                return 0;
+            }
+            )
             //console.log(ourData)
             //gv_symbols = gv_symbols.concat(ourData);
             var optionsAsString = '';
