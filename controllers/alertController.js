@@ -6,7 +6,7 @@ const Promise = require('bluebird')
 const AppDAO = require('../db/dao')
 const AlertsRepo = require('../db/alert_repo')
 const dao = new AppDAO('./db/alerts.sqlite')
-
+const mysqlcon = require('../db/mysqldao.js')
 
 const alert_getAll = (req, resp) => {
     const alerts_repo = new AlertsRepo(dao)
@@ -22,8 +22,20 @@ const alert_getAll = (req, resp) => {
     // console.log("alerty z pliku pobranie")
     // console.log(data)
 
+    // try {
+    //     alerts_repo.getAll().then(dbd=>{datadb=dbd;
+    //         resp.render("AlertGenerator", {alerts: datadb})
+    //         console.log("Po promisie")
+    //         console.log(datadb)});
+    // } catch (err) {
+    //     console.log(err)
+    //     // handle your file not found (or other error) here
+    // }
+    console.log("alerty z DB pobranie:")
+    console.log(datadb)
+    //z mysql
     try {
-        alerts_repo.getAll().then(dbd=>{datadb=dbd;
+            mysqlcon.getAll().then(dbd=>{datadb=dbd;
             resp.render("AlertGenerator", {alerts: datadb})
             console.log("Po promisie")
             console.log(datadb)});
@@ -31,6 +43,7 @@ const alert_getAll = (req, resp) => {
         console.log(err)
         // handle your file not found (or other error) here
     }
+
     console.log("alerty z DB pobranie:")
     console.log(datadb)
     //resp.render("AlertGenerator", {alerts: data})
@@ -53,7 +66,8 @@ const alert_create = (req, resp) => {
     // console.log(fileContent)
 
     //fs.writeFileSync(filePath, JSON.stringify(fileContent, null, 2))
-    alerts_repo.create(req.body).then(status=>console.log(status))
+    //alerts_repo.create(req.body).then(status=>console.log(status))
+    mysqlcon.create(req.body).then(status=>console.log(status))
     resp.json({redirect: '/'})
 }
 
@@ -70,20 +84,30 @@ const alert_delete = (req, resp) => {
     //     console.log(err)
     //     // handle your file not found (or other error) here
     // }
-    var tmp = []
-    console.log("Id delete" + idDelete)
+    // var tmp = []
+    // console.log("Id delete" + idDelete)
 
-    console.log("wyswietl plik aktualny")
-    console.log(fileContent)
-    fileContent.forEach(element => {
-        if(element.trid != idDelete){
-            console.log("Zostaw w alertach" + element.trid)
-            tmp.push(element)
-        } 
-    });
-    console.log(tmp)
+    // console.log("wyswietl plik aktualny")
+    // console.log(fileContent)
+    // fileContent.forEach(element => {
+    //     if(element.trid != idDelete){
+    //         console.log("Zostaw w alertach" + element.trid)
+    //         tmp.push(element)
+    //     } 
+    // });
+    // console.log(tmp)
+    // try {
+    //     alerts_repo.delete(idDelete).then(dbd=>{
+    //         console.log(dbd)
+    //         resp.json({redirect: '/'})
+    //     });
+    // } catch (err) {
+    //     console.log(err)
+    //     // handle your file not found (or other error) here
+    // }
+
     try {
-        alerts_repo.delete(idDelete).then(dbd=>{
+            mysqlcon.deleteRow(idDelete).then(dbd=>{
             console.log(dbd)
             resp.json({redirect: '/'})
         });

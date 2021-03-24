@@ -21,7 +21,7 @@ var mail = {
 }
 
 function fillTemplate(param) {
-    switch (param.condition) {
+    switch (param.conditional) {
         case 'Greater Than': 
         mail.subject= param.symbol + " Cena wzrosła powyżej: " + param.price1 + ". Cena aktualna: " + param.currentPrice
         mail.text= param.symbol + " Cena wzrosła powyżej: " + param.price1 + ". Cena aktualna: " + param.currentPrice

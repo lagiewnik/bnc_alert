@@ -9,7 +9,7 @@ const Promise = require('bluebird')
 const AppDAO = require('../db/dao')
 const AlertsRepo = require('../db/alert_repo')
 const dao = new AppDAO('./db/alerts.sqlite')
-
+const mysqlcon = require('../db/mysqldao.js')
 
 var gv_allsymprice = {};
 
@@ -45,7 +45,7 @@ function getallsymbolsprices() {
 }
 
 function generatealerts() {
-    const alerts_repo = new AlertsRepo(dao)
+    //const alerts_repo = new AlertsRepo(dao)
     alertCfgChange = 0
     // try {
     //     dataAlerts = JSON.parse(fs.readFileSync(filePath));
@@ -54,7 +54,7 @@ function generatealerts() {
     //     // handle your file not found (or other error) here
     // }
     try {
-        alerts_repo.getAll().then(dbd=>{dataAlerts=dbd;
+        mysqlcon.getAll().then(dbd=>{dataAlerts=dbd;
 
             dataAlerts.forEach(function (json) {
                 var symbol1 = json.symbol.replace(/\s+/g, "");
@@ -62,7 +62,7 @@ function generatealerts() {
                 //var symbol = symbol1.substr(1,symbol1.length);//remove leading spaces
                 var alerton = json.alertOn.trim();
                 var currencytype = json.currency.trim();
-                var alertoptions = json.condition.trim();
+                var alertoptions = json.conditional.trim();
                 var price1 = parseFloat(json.price1);
                 var price2 = parseFloat(json.price2);
                 var trid = json.trid
@@ -176,17 +176,17 @@ function generatealerts() {
     }
 }
 
-function alarmSend (symbol, price1, price2, currentPrice, condition, trid) {
+function alarmSend (symbol, price1, price2, currentPrice, conditional, trid) {
     
     const sendParams = {
         'symbol': symbol, 
         'price1':price1, 
         'price2': price2,
         'currentPrice': currentPrice, 
-        'condition':condition,
+        'conditional': conditional,
         'trid' : trid
     }
-    console.log("The currency: " + symbol + "break price" + price1 + " Current price is: " + currentPrice + " Condition: " + condition )
+    console.log("The currency: " + symbol + "break price" + price1 + " Current price is: " + currentPrice + " conditional: " + conditional )
     mailSender.sendEmail(sendParams)
     telegramSend.sendTelegramMsg(sendParams)
     setGotSend(trid, 1)
@@ -194,9 +194,9 @@ function alarmSend (symbol, price1, price2, currentPrice, condition, trid) {
 }
 
 function setGotSend(trid, newGotSend) {
-    const alerts_repo = new AlertsRepo(dao)
+    //const alerts_repo = new AlertsRepo(dao)
     try {
-        alerts_repo.update({trid, newGotSend }).then(
+        mysqlcon.update({trid, newGotSend }).then(
             console.log("zmiana parametru gotSend na: "+ newGotSend + " dla: " + trid )
         )
     } catch (err) {

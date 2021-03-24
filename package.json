@@ -9,6 +9,7 @@
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "ichimoku": "^1.0.4",
+    "mysql": "^2.18.1",
     "nodemailer": "^6.5.0",
     "sqlite3": "^5.0.2",
     "telegraf": "^4.1.2",

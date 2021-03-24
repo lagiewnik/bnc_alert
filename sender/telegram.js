@@ -4,7 +4,7 @@ require('dotenv').config()
 
 var msgText = ""
 function fillTemplate(param) {
-    switch (param.condition) {
+    switch (param.conditional) {
         case 'Greater Than': 
         msgText= param.symbol + " Cena wzrosła powyżej: " + param.price1 + ". Cena aktualna: " + param.currentPrice
         

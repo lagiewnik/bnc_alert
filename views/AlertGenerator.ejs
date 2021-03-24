@@ -73,6 +73,9 @@
                 <div class="form-group col-sm-2">
                     <input type="button" class="btn btn-dark add-row form-control" value="Add Row">
                 </div>
+                <div class="form-group col-sm-2">
+                    <input type="button" class="btn btn-dark form-control" value="Alarm ON/OFF">
+                </div>
             </div>
         </form>
 
@@ -106,7 +109,7 @@
                                     <%= alert.currency %>
                                 </span></td>
                             <td><span class="dpcond">
-                                    <%= alert.condition %>
+                                    <%= alert.conditional %>
                                 </span></td>
                             <td><span class="dpprice1">
                                     <%= alert.price1 %>
@@ -272,7 +275,7 @@
             const createEndpoint = "/"
             var markup = "<tr id=" + trid + "><td><input type='checkbox' name='record'></td><td>" + '<span class="dpsym">' + symbol + '</span></td><td><span class="dpaon">' + alerton + '</span></td><td><span class="dpcurtype">' + currencytype + '</span></td><td><span class="dpcond">' + alertoptions + '</span></td><td><span class="dpprice1">' + price1 + '</span></td><td><span class="dpprice2">' + price2 + "</span></td></tr>";
             $("#dptable tbody").append(markup);
-            dataToSend = JSON.stringify({ "trid": trid, "symbol": symbol, "alertOn": alerton, "currency": currencytype, "condition": alertoptions, "price1": price1, "price2": price2, "gotSend": 0 });
+            dataToSend = JSON.stringify({ "trid": trid, "symbol": symbol, "alertOn": alerton, "currency": currencytype, "conditional": alertoptions, "price1": price1, "price2": price2, "gotSend": 0 });
             // console.log("datasend create alert:");
             // console.log(dataToSend);
             fetch('/' + trid, {
