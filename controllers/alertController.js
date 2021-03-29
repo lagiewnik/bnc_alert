@@ -3,13 +3,11 @@ var fs = require('fs');
 const { toNamespacedPath } = require('path');
 const filePath = './config/alerts.json';
 const Promise = require('bluebird')
-const AppDAO = require('../db/dao')
-const AlertsRepo = require('../db/alert_repo')
-const dao = new AppDAO('./db/alerts.sqlite')
+
 const mysqlcon = require('../db/mysqldao.js')
 
 const alert_getAll = (req, resp) => {
-    const alerts_repo = new AlertsRepo(dao)
+    // const alerts_repo = new AlertsRepo(dao)
     var data;
     var datadb;
 
@@ -50,7 +48,7 @@ const alert_getAll = (req, resp) => {
 }
 
 const alert_create = (req, resp) => {
-    const alerts_repo = new AlertsRepo(dao)
+    // const alerts_repo = new AlertsRepo(dao)
     console.log("create exec")
     console.log(req.body)
     // var fileContent
@@ -74,7 +72,7 @@ const alert_create = (req, resp) => {
 const alert_delete = (req, resp) => {
     //console.log(req)
     //const data;
-    const alerts_repo = new AlertsRepo(dao)
+    // const alerts_repo = new AlertsRepo(dao)
     var fileContent 
     const idDelete = req.params.id
     // try {

@@ -4,6 +4,12 @@
   "description": "As an alternative to tradingview which only allows single alert for free account, this tool allows users to set any number of alerts for Binance Exchange.",
   "main": "server.js",
   "dependencies": {
+    "axios": "^0.21.1",
+    "chai": "^4.3.3",
+    "lodash": "^4.17.21",
+    "node-telegram-bot-api": "^0.40.0",
+    "tdsequential": "^1.0.15",
+    "technicalindicators": "^3.1.0",
     "bluebird": "^3.7.2",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.6",

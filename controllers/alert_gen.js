@@ -6,9 +6,7 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const mailSender = require('../sender/mailer')
 const telegramSend = require('../sender/telegram')
 const Promise = require('bluebird')
-const AppDAO = require('../db/dao')
-const AlertsRepo = require('../db/alert_repo')
-const dao = new AppDAO('./db/alerts.sqlite')
+
 const mysqlcon = require('../db/mysqldao.js')
 
 var gv_allsymprice = {};
