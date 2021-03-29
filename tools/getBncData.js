@@ -14,7 +14,7 @@ function getallsymbols() {
         var optionsAsString = '';
         //document.getElementById('currentprice').value = ourData[0]["price"];
         var filteredPair = ourData.filter(function (entry){
-                return entry.symbol.includes("USDT")
+                return entry.symbol.includes("USDT") 
         })
         let pairs = []
         const symbols = filteredPair.map(function (sp) {
