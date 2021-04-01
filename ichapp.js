@@ -1,10 +1,12 @@
 const axios = require('axios');
-
-const { readPair, createMockData } = require('./file.js');
-const ichimokuTools = require('./tools/ichimokuSpanAnalize')
-
-const dataFolder = "./calcresults/"
-const mysqlcon = require('./db/mysqlichimoku.js')
+var path = require("path");
+const mailSender = require(__dirname+'/sender/mailer')
+const telegramSend = require(__dirname+'/sender/telegram')
+const { readPair, createMockData } = require(__dirname+'/file.js');
+const ichimokuTools = require(__dirname+'/tools/ichimokuSpanAnalize')
+const ichimokuScore = require(__dirname+'/tools/ichimokuInterprateAndSendSignal')
+const dataFolder = __dirname+"/calcresults/"
+const mysqlcon = require(__dirname+'/db/mysqlichimoku.js')
 const ichimokuCloud = require('technicalindicators').IchimokuCloud;
 
 const binanceApiEndpoint = 'https://api.binance.com';
@@ -27,7 +29,8 @@ candleTimeRangeMap.set('1d', { timeDuration: 86400000, addtionTime: 0});
 //candleTimeRangeMap.set('3d', { timeDuration: 259200000, addtionTime: 172800000});
 //candleTimeRangeMap.set('1w', { timeDuration: 604800000, addtionTime: 259200000});
 
-const symbolList = readPair('./pair.txt');
+const symbolList = readPair(__dirname+'/pair.txt');
+//const symbolList = ["PAXGUSDT"]
 console.log("Count of symbol: " + symbolList.length);
 
 function candleStickBuildParam(symbol, interval, startTime, endTime, limit = 130) {
@@ -152,9 +155,21 @@ function prepareSignalData(analizeResult) {
 
 // for now notification is sent to file, further can be email or telegram
 function notify(analizeResult, timeRangeKey, symbol) {
-  createMockData(`${dataFolder}signal-${symbol}-${timeRangeKey}.json`, analizeResult)
+  //createMockData(`${dataFolder}signal-${symbol}-${timeRangeKey}.json`, analizeResult)
+  const is = ichimokuScore.scoreSignal(analizeResult).then(is => console.log(is));
   try {
-    mysqlcon.replace(analizeResult)
+    mysqlcon.checkSignalWasSend(analizeResult).then(row=> {
+      console.log("wiersze juz istniejace: " + row[0].count)
+      if(row[0].count == 0){
+        console.log("do db i wyslij")
+        mysqlcon.replace(analizeResult)
+        ichimokuScore.scoreSignal(analizeResult).then(is => {
+          telegramSend.sendTelegramRawMsg(is.textMsg)
+          mysqlcon.updateSendSignalStatus(analizeResult)
+          console.log(is)});
+        
+      } 
+    })
   }
   catch (e) {
     console.log(e);
@@ -169,7 +184,8 @@ async function main() {
   try {
     console.log("Symbol list = ", symbolList)
     console.log("Start execution")
-    
+    console.log(candleTimeRangeMap)
+    console.log(candleTimeRangeMap.values())
     const candleTimeRangeMapKeys =[ ...candleTimeRangeMap.keys() ];
 
     for (let i = 0; i < symbolList.length; i++) {
@@ -181,7 +197,7 @@ async function main() {
       for (let j = 0; j < candleTimeRangeMapKeys.length; j++) {
         console.log('================================================');
         let timeRangeKey = candleTimeRangeMapKeys[j];
-
+        console.log(candleTimeRangeMap.get(candleTimeRangeMapKeys[j]));
         console.log(`Analyze data for symbol ${symbol} and time range ${timeRangeKey}`)
 
         let analyzeResult = await analyzeData(currentPrice.data.price, timeRangeKey, symbol);
@@ -197,6 +213,8 @@ async function main() {
 
         if (signalData.length > 0) {
           console.log('Sending notification..');
+          //const is = ichimokuScore.scoreSignal(signalData).then(is => console.log(is));
+          //console.log(is)
           notify(signalData, timeRangeKey, symbol);
           console.log('Notification sent.');
         } else {

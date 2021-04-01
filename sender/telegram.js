@@ -34,7 +34,13 @@ function sendTelegramMsg(option) {
     bot.telegram.sendMessage(process.env.TELEGRAM_CHANNEL_ID, msgText)
 }
 
+function sendTelegramRawMsg(msg) {
+    console.log("bot token:" + process.env.BOT_TOKEN)
+    const bot = new Telegraf(process.env.BOT_TOKEN)
+    bot.telegram.sendMessage(process.env.TELEGRAM_CHANNEL_ID, msg)
+}
+
 //sendTelegramMsg({"price1":"PLN12333"})
 module.exports = {
-    sendTelegramMsg
+    sendTelegramMsg, sendTelegramRawMsg
 }

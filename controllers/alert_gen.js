@@ -1,13 +1,13 @@
 const { json } = require('body-parser');
 var fs = require('fs');
 const { toNamespacedPath } = require('path');
-const filePath = './config/alerts.json';
+const filePath = __dirname+'../config/alerts.json';
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const mailSender = require('../sender/mailer')
-const telegramSend = require('../sender/telegram')
+const mailSender = require(__dirname+'/../sender/mailer')
+const telegramSend = require(__dirname+'/../sender/telegram')
 const Promise = require('bluebird')
 
-const mysqlcon = require('../db/mysqldao.js')
+const mysqlcon = require(__dirname+'/../db/mysqldao.js')
 
 var gv_allsymprice = {};
 

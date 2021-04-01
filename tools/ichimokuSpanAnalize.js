@@ -88,7 +88,7 @@ function priceVsKumo(p, p_prev, sA, sA_prev, sB, sB_prev) {
     // -10 - cena spadła poniżej chmury z chmury  
     // -11 - cena spadła w dół w chmurę
     // 0 - cena w chmurze utrzymana
-    // 10 - cena weszła w górę w chmurę
+    // 11 - cena weszła w górę w chmurę
     // 10 - cena wyszła powyżej chmury z chmury  
     // 15 - cena przebiła chmurę w góre
     // 5 - cena utrzymuje się nad chmura

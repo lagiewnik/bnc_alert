@@ -95,6 +95,32 @@ function create(content) {
     })
 }
 
+function getLastSignals()
+{
+    return new Promise(function(resolve, reject){
+        var connection = con;
+
+        var query_str =
+            'select * from ichimokuSignals where ((period = "4h" AND stopTime > UNIX_TIMESTAMP()*1000 ) OR (period = "1d" AND stopTime > UNIX_TIMESTAMP()*1000 ))';
+
+        var query_var = [];
+
+        var query = connection.query(query_str, query_var, function (err, rows, fields) {
+            //if (err) throw err;
+            if (err) {
+                //throw err;
+                console.log(err);
+                logger.info(err);
+                reject(err);
+            }
+            else {
+                resolve(rows);
+                //console.log(rows);
+            }
+        }); //var query = connection.query(query_str, function (err, rows, fields) {
+    });
+}
+
 function replace(content) {
     return new Promise(function(resolve, reject){
         var connection = con;
@@ -111,16 +137,58 @@ function replace(content) {
         const Signal3Line= content[0].Signals.Signal3Line
         const ChikouSpanVsPrice= content[0].Signals.ChikouSpanVsPrice
 
-        var query_str =
-        "REPLACE INTO ichimokuSignals (symbol, period, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // var query_str =
+        // "REPLACE INTO ichimokuSignals (symbol, period, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        var query_var = [symbol, interval, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice];
+        var query_str = "INSERT INTO ichimokuSignals (symbol, period, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE symbol=?, period=?, startTime=?, stopTime=?, CrossTenkanKijun=?, crossVSKumo=?, CrossPriceKijun=?, crossPriceChikou=?, kumoColor=?, priceVsKumo=?, Signal3Line=?, ChikouSpanVsPrice=?;"
+
+        var query_var = [symbol, interval, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice, symbol, interval, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice];
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
             if (err) {
                 //throw err;
                 console.log(err);
-                logger.info(err);
+                //logger.info(err);
+                reject(err);
+            }
+            else {
+                console.log("REPLACE db")
+                console.log(fields)
+                console.log(rows);
+                resolve(rows);
+                
+            }
+        });
+    })
+}
+
+
+function checkSignalWasSend(content) {
+    return new Promise(function(resolve, reject){
+        var connection = con;
+        const symbol = content[0].symbol;
+        const interval = content[0].interval;
+        const startTime = content[0].startTime;
+        const stopTime = content[0].stopTime;
+        const CrossTenkanKijun = content[0].Signals.CrossTenkanKijun
+        const crossVSKumo= content[0].Signals.crossVSKumo
+        const CrossPriceKijun= content[0].Signals.CrossPriceKijun
+        const crossPriceChikou= content[0].Signals.crossPriceChikou
+        const kumoColor= content[0].Signals.kumoColor
+        const priceVsKumo= content[0].Signals.priceVsKumo
+        const Signal3Line= content[0].Signals.Signal3Line
+        const ChikouSpanVsPrice= content[0].Signals.ChikouSpanVsPrice
+
+        
+        var query_str ="SELECT count(*) as count FROM ichimokuSignals WHERE (symbol = ? AND period = ? AND startTime = ? AND stopTime = ? AND CrossTenkanKijun=? AND crossVSKumo=? AND CrossPriceKijun=? AND crossPriceChikou=? AND kumoColor=? AND priceVsKumo=? AND Signal3Line=? AND ChikouSpanVsPrice=? AND SendAlert=?)";
+        var query_var = [symbol, interval, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice, 1];
+
+        var query = connection.query(query_str, query_var, function (err, rows, fields) {
+            //if (err) throw err;
+            if (err) {
+                //throw err;
+                console.log(err);
+                //logger.info(err);
                 reject(err);
             }
             else {
@@ -132,6 +200,37 @@ function replace(content) {
         });
     })
 }
+function updateSendSignalStatus(content){
+    return new Promise(function(resolve, reject){
+        var connection = con;
+        
+        const symbol = content[0].symbol;
+        const interval = content[0].interval;
+        const startTime = content[0].startTime;
+        const stopTime = content[0].stopTime;
+        
+        var query_str =
+        "UPDATE ichimokuSignals SET SendAlert = 1 WHERE symbol = ? AND period = ? AND startTime = ? AND stopTime = ?";
+        var query_var = [symbol, interval, startTime, stopTime];
+        var query = connection.query(query_str, query_var, function (err, rows, fields) {
+            //if (err) throw err;
+            if (err) {
+                //throw err;
+                console.log(err);
+                logger.info(err);
+                reject(err);
+            }
+            else {
+                console.log("UPDATE sendSignal" + symbol + " " + interval + " " + startTime + " " + stopTime)
+                console.log(fields)
+                console.log(rows);
+                resolve(rows);
+                
+            }
+        });
+    })
+  }
+
 function update(content){
     return new Promise(function(resolve, reject){
         var connection = con;
@@ -169,7 +268,7 @@ function getRecordCount(symbol, interval, startTime, stopTime) {
             if (err) {
                 //throw err;
                 console.log(err);
-                logger.info(err);
+                //logger.info(err);
                 reject(err);
             }
             else {
@@ -194,7 +293,7 @@ function getAll() {
             if (err) {
                 //throw err;
                 console.log(err);
-                logger.info(err);
+                //logger.info(err);
                 reject(err);
             }
             else {
@@ -206,7 +305,7 @@ function getAll() {
         });
     }) 
   }
-  function deleteRow(trid) {
+function deleteRow(trid) {
     return new Promise(function(resolve, reject){
         var connection = con;
         var query_str =
@@ -218,7 +317,7 @@ function getAll() {
             if (err) {
                 //throw err;
                 console.log(err);
-                logger.info(err);
+                //logger.info(err);
                 reject(err);
             }
             else {
@@ -231,6 +330,35 @@ function getAll() {
     })
   }
 
+
+// content = [
+//     {
+//       symbol: 'ZIOMEKUSDT',
+//       interval: '1d',
+//       startTime: 1617235200000,
+//       stopTime: 1617321599999,
+//       Signals: {
+//         CrossTenkanKijun:6,
+//         crossVSKumo: 3,
+//         CrossPriceKijun: 3,
+//         crossPriceChikou: 3,
+//         kumoColor: 3,
+//         priceVsKumo: 3,
+//         Signal3Line: 3,
+//         ChikouSpanVsPrice: 3
+//       }
+//     }
+//   ]
+//   checkSignalWasSend(content).then(row=> {
+//       console.log("wiersze juz istniejace: " + row[0].count)
+//       if(row[0].count == 0){
+//         console.log("do db i wyslij")
+//         replace(content)
+//         updateSendSignalStatus(content)
+//       } 
+// })
+  //replace(content)
+  //updateSendSignalStatus(content)
 // create({trid:3512556532,symbol:"ETHUSDT",alertOn:"ltt",currency:"USD",condition:"condition",price1:188448.23,price2:300333.12333,gotSend:1}).then(row=>{
 //     console.log(row)
 // })
@@ -275,10 +403,15 @@ function getAll() {
 //       }
 //     }
 //   ])
+
+console.log(getLastSignals())
 module.exports = {
     getAll,
     deleteRow,
     create,
     update,
-    replace
+    replace,
+    getLastSignals,
+    checkSignalWasSend,
+    updateSendSignalStatus
 }

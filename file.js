@@ -8,7 +8,7 @@ exports.readPair = (path) => {
 }
 
 exports.createMockData = (mockFileName, content) => {
-    fs.writeFile('./' + mockFileName, JSON.stringify(content, null, 2), function (err) {
+    fs.writeFile(mockFileName, JSON.stringify(content, null, 2), function (err) {
         if (err) {
             return console.log(err);
         }
