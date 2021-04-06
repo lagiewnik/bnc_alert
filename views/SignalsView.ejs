@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Signals View</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/alert.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="/sorttable.js"></script>
+    <script type="text/javascript" src="/tools.js"></script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        changeBackgroundColor();
+        </script>
+    <div class="topnav">
+        <a class="active" href="/">Alerts</a>
+        <a href="/signals">Signals</a>
+      </div> 
+    <div class="container"> 
+    <br>
+    <div class="container">
+
+        <h1>Signals</h1>
+        <p>Aktualne sygnały</p>
+        <table id="dptable" class="table sortable">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Period</th>
+                    <th>Od</th>
+                    <th>Do</th>
+                    <th>BuyScore</th>
+                    <th>SellScore</th>
+                    <th>CrossTenkanKijun</th>
+                    <th>crossVSKumo</th>
+                    <th>CrossPriceKijun</th>
+                    <th>crossPriceChikou</th>
+                    <th>kumoColor</th>
+                    <th>priceVsKumo</th>
+                    <th>Signal3Line</th>
+                    <th>ChikouSpanVsPrice</th>
+                    <th>SendAlert</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <% if (signals.length> 0) { %>
+                    <% signals.forEach(sig=> { %>
+                        <tr>
+                            <td><span class="dpsym">
+                                    <%= sig.symbol %>
+                                </span></td>
+                            <td><span class="dpaon">
+                                    <%= sig.period %>
+                                </span></td>
+                            <td><span class="dpcurtype">
+                                    <%= sig.startTime %>
+                                </span></td>
+                            <td><span class="dpcond">
+                                    <%= sig.stopTime %>
+                                </span></td>
+                                <td><span class="dpprice1">
+                                    <%= sig.buyScore %>
+            
+                                </span></td>
+                            <td><span class="dpprice2">
+                                    <%= sig.sellScore %>
+                                </span></td>
+                            <td><span class="indicator">
+                                    <%= sig.CrossTenkanKijun %>
+                                    <img src="<%= sig.CrossTenkanKijun_img %>" alt>
+                                </span></td>
+                            <td><span class="indicator">
+                                    <%= sig.crossVSKumo %>
+                                    <img src="<%= sig.crossVSKumo_img %>" alt>
+                                </span></td>
+                                <td><span class="indicator">
+                                    <%= sig.CrossPriceKijun %>
+                                    <img src="<%= sig.CrossPriceKijun_img %>" alt>
+                                </span></td>
+                                <td><span class="indicator">
+                                    <%= sig.crossPriceChikou %>
+                                    <img src="<%= sig.crossPriceChikou_img %>" alt>
+                                </span></td>
+                                <td><span class="indicator">
+                                    <%= sig.kumoColor %>
+                                    <img src="<%= sig.kumoColor_img %>" alt>
+                                </span></td>
+                                <td><span class="indicator">
+                                    <%= sig.priceVsKumo %>
+                                    <img src="<%= sig.priceVsKumo_img %>" alt>
+                                </span></td>
+                                <td><span class="indicator">
+                                    <%= sig.Signal3Line %>
+                                    <img src="<%= sig.Signal3Line_img %>" alt>
+                                </span></td>
+                                <td><span class="indicator">
+                                    <%= sig.ChikouSpanVsPrice %>
+                                    <img src="<%= sig.ChikouSpanVsPrice_img %>" alt>
+                                </span></td>
+                        </tr>
+                        <% }) %>
+                            <% } %>
+            </tbody>
+        </table>
+        
+
+
+    </div>
+    <footer>
+    </footer>
+</body>
+
+
+</html>
+<script>
+
+
+
+    $(document).ready(function () {
+        console.log("TEST")
+        changeBackgroundColor()
+    })
+
+    function changeBackgroundColor() {
+        var elements = document.getElementsByClassName("indicator")
+        for (var i = 0; i < elements.length; i++) {
+            var value = parseInt(elements[i].innerText)
+            if(value>0)
+            {
+            elements[i].parentElement.style.backgroundColor = '#cdfdc3';
+            }
+            else if(value<0){
+            elements[i].parentElement.style.backgroundColor = '#ffbfbf';
+            }
+        }
+    }
+</script>

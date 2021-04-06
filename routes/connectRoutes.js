@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const alertController = require('../controllers/alertController')
+
 let bodyParser = require('body-parser');
 
 router.use(bodyParser.json());
@@ -10,6 +11,7 @@ console.log("router exec")
 router.post('/:id', alertController.alert_create)
 router.delete('/:id', alertController.alert_delete )
 router.get('/',alertController.alert_getAll)
+router.get('/signals',alertController.signal_getAll)
 
 
 module.exports = router;

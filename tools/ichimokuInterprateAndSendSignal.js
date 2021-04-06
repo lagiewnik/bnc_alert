@@ -164,24 +164,26 @@ function scoreSignal(analizeResult) {
     })
 }
 
-analizeRecord =  [
-    {
-      symbol: 'USDTNGN',
-      interval: '1d',
-      startTime: 1617235200000,
-      stopTime: 1617321599999,
-      Signals: {
-        CrossTenkanKijun: -10,
-        crossVSKumo: -10,
-        CrossPriceKijun: -10,
-        crossPriceChikou: -10,
-        kumoColor: -5,
-        priceVsKumo: -10,
-        Signal3Line: -10,
-        ChikouSpanVsPrice: -9
-      }
-    }
-  ]
+
+
+// analizeRecord =  [
+//     {
+//       symbol: 'USDTNGN',
+//       interval: '1d',
+//       startTime: 1617235200000,
+//       stopTime: 1617321599999,
+//       Signals: {
+//         CrossTenkanKijun: -10,
+//         crossVSKumo: -10,
+//         CrossPriceKijun: -10,
+//         crossPriceChikou: -10,
+//         kumoColor: -5,
+//         priceVsKumo: -10,
+//         Signal3Line: -10,
+//         ChikouSpanVsPrice: -9
+//       }
+//     }
+//   ]
 
 //scoreSignal(analizeRecord).then(x=>console.log(x))
 module.exports = {

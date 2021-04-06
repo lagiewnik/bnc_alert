@@ -101,7 +101,7 @@ function getLastSignals()
         var connection = con;
 
         var query_str =
-            'select * from ichimokuSignals where ((period = "4h" AND stopTime > UNIX_TIMESTAMP()*1000 ) OR (period = "1d" AND stopTime > UNIX_TIMESTAMP()*1000 ))';
+            'select * from ichimokuSignals where ((period = "4h" AND stopTime > UNIX_TIMESTAMP()*100 ) OR (period = "1d" AND stopTime > UNIX_TIMESTAMP()*100 ))';
 
         var query_var = [];
 
@@ -212,6 +212,37 @@ function updateSendSignalStatus(content){
         var query_str =
         "UPDATE ichimokuSignals SET SendAlert = 1 WHERE symbol = ? AND period = ? AND startTime = ? AND stopTime = ?";
         var query_var = [symbol, interval, startTime, stopTime];
+        var query = connection.query(query_str, query_var, function (err, rows, fields) {
+            //if (err) throw err;
+            if (err) {
+                //throw err;
+                console.log(err);
+                logger.info(err);
+                reject(err);
+            }
+            else {
+                console.log("UPDATE sendSignal" + symbol + " " + interval + " " + startTime + " " + stopTime)
+                console.log(fields)
+                console.log(rows);
+                resolve(rows);
+                
+            }
+        });
+    })
+  }
+
+function updateBuySellScore(content,buyScore,sellScore){
+    return new Promise(function(resolve, reject){
+        var connection = con;
+        
+        const symbol = content[0].symbol;
+        const interval = content[0].interval;
+        const startTime = content[0].startTime;
+        const stopTime = content[0].stopTime;
+        
+        var query_str =
+        "UPDATE ichimokuSignals SET buyScore = ?, sellScore = ? WHERE symbol = ? AND period = ? AND startTime = ? AND stopTime = ?";
+        var query_var = [buyScore, sellScore, symbol, interval, startTime, stopTime];
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
             if (err) {
@@ -403,6 +434,7 @@ function deleteRow(trid) {
 //       }
 //     }
 //   ])
+getLastSignals().then(x=>console.log(x))
 
 console.log(getLastSignals())
 module.exports = {
@@ -413,5 +445,6 @@ module.exports = {
     replace,
     getLastSignals,
     checkSignalWasSend,
-    updateSendSignalStatus
+    updateSendSignalStatus,
+    updateBuySellScore
 }

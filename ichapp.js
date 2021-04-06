@@ -110,11 +110,10 @@ async function analyzeData(currentPrice, timeRangeKey, symbol) {
         "kumoColor": ichimokuTools.kumoColor(ichimokuResult.senkouSpanA, ichimokuResult.senkouSpanAPrev, ichimokuResult.senkouSpanB, ichimokuResult.senkouSpanBPrev),
         "priceVsKumo": ichimokuTools.priceVsKumo(ichimokuResult.currentPrice, ichimokuResult.chikouSpanPrev, ichimokuResult.senkouSpanA, ichimokuResult.senkouSpanAPrev, ichimokuResult.senkouSpanB, ichimokuResult.senkouSpanBPrev),
         "Signal3Line": ichimokuTools.s3line(ichimokuResult.tenkanSen, ichimokuResult.tenkanSenPrev, ichimokuResult.kijunSen, ichimokuResult.kijunSenPrev, ichimokuResult.senkouSpanA, ichimokuResult.senkouSpanAPrev, ichimokuResult.senkouSpanB, ichimokuResult.senkouSpanBPrev),
-        "ChikouSpanVsPrice": 9 * Math.sign(parseFloat(currentPrice) - ichimokuResult.priceVSchikouSpan)
+        "ChikouSpanVsPrice": 9 * Math.sign(parseFloat(currentPrice) - ichimokuResult.priceVSchikouSpan),
       }
     }]
     if (DEBUG) console.log('ichimokuAnalizeResult = ', ichimokuAnalizeResult)
-
     return ichimokuAnalizeResult;
   } else {
     console.log('Skipping analyze process, because data set is too small = ',result.length)
@@ -150,6 +149,10 @@ function prepareSignalData(analizeResult) {
     //|| m.Signals.ChikouSpanVsPrice!=0
   )
   //console.log('Signal data = ', signalToSend);
+//   if (signalToSend.length > 0) {
+//   signalToSend[0].Signals["buyScore"]=7
+//   signalToSend[0].Signals["sellScore"]=8
+// }
   return signalToSend;
 }
 
@@ -164,10 +167,10 @@ function notify(analizeResult, timeRangeKey, symbol) {
         console.log("do db i wyslij")
         mysqlcon.replace(analizeResult)
         ichimokuScore.scoreSignal(analizeResult).then(is => {
+          mysqlcon.updateBuySellScore(analizeResult,is.buyScore,is.sellScore)
           telegramSend.sendTelegramRawMsg(is.textMsg)
           mysqlcon.updateSendSignalStatus(analizeResult)
           console.log(is)});
-        
       } 
     })
   }
