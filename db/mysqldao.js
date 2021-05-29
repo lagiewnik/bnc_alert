@@ -14,7 +14,7 @@ const con = mysql.createConnection({
 
 con.connect((err) => {
   if(err){
-    console.log('Error connecting to Db');
+    console.log('Error connecting to Db for:' + process.env.DB_HOST + " " + process.env.DB_USER + "" +  process.env.DB_PASSWORD);
     return;
   }
   console.log('Connection established');
@@ -48,7 +48,7 @@ function getLastRecord(name)
             if (err) {
                 //throw err;
                 console.log(err);
-                logger.info(err);
+                //logger.info(err);
                 reject(err);
             }
             else {
@@ -94,6 +94,36 @@ function create(content) {
     })
 }
 
+function create_observed_symbol(symbol) {
+    return new Promise(function(resolve, reject){
+        var connection = con;
+        //var symbol = symbol
+        var query_str =
+        "INSERT INTO symbols_observed ( symbol)VALUES (?)";
+        console.log("query: "+query_str)
+        console.log(symbol)
+        var query_var = [ 
+            symbol
+            ];
+        console.log(query_var)
+        var query = connection.query(query_str, query_var, function (err, rows, fields) {
+            //if (err) throw err;
+            if (err) {
+                //throw err;
+                console.log(err);
+                //logger.info(err);
+                reject(err);
+            }
+            else {
+                console.log(fields)
+                console.log(rows);
+                resolve(rows);
+                
+            }
+        });
+    })
+}
+
 function update(content){
     return new Promise(function(resolve, reject){
         var connection = con;
@@ -120,7 +150,7 @@ function update(content){
     })
   }
 
-  function getAll() {
+function getAll() {
     return new Promise(function(resolve, reject){
         var connection = con;
         var query_str =
@@ -144,7 +174,33 @@ function update(content){
         });
     }) 
   }
-  function deleteRow(trid) {
+
+function getObservedSymbols() {
+    return new Promise(function(resolve, reject){
+        var connection = con;
+        var query_str =
+        "SELECT * FROM symbols_observed";
+        var query_var = [];
+        console.log(query_var)
+        var query = connection.query(query_str, query_var, function (err, rows, fields) {
+            //if (err) throw err;
+            if (err) {
+                //throw err;
+                console.log(err);
+                //logger.info(err);
+                reject(err);
+            }
+            else {
+                console.log(fields)
+                console.log(rows);
+                resolve(JSON.parse(JSON.stringify(rows)));
+                
+            }
+        });
+    }) 
+  }
+
+function deleteRow(trid) {
     return new Promise(function(resolve, reject){
         var connection = con;
         var query_str =
@@ -168,6 +224,7 @@ function update(content){
         });
     })
   }
+
 
 // create({trid:3512556532,symbol:"ETHUSDT",alertOn:"ltt",currency:"USD",condition:"condition",price1:188448.23,price2:300333.12333,gotSend:1}).then(row=>{
 //     console.log(row)
@@ -199,5 +256,7 @@ module.exports = {
     getAll,
     deleteRow,
     create,
-    update
+    update,
+    create_observed_symbol,
+    getObservedSymbols
 }

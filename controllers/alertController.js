@@ -6,6 +6,18 @@ const Promise = require('bluebird')
 
 const mysqlcon = require('../db/mysqldao.js')
 const mysqlsignal = require('../db/mysqlichimoku.js')
+
+const arbitration = (req, resp) => {
+    try {resp.render("ArbitrageView")} 
+    catch (err) {
+    console.log(err)
+    // handle your file not found (or other error) here
+}
+const add_ebserved_symbol = (req, resp) => {
+
+}
+
+}
 const alert_getAll = (req, resp) => {
     // const alerts_repo = new AlertsRepo(dao)
     var data;
@@ -50,6 +62,29 @@ const alert_create = (req, resp) => {
     //alerts_repo.create(req.body).then(status=>console.log(status))
     mysqlcon.create(req.body).then(status=>console.log(status))
     resp.json({redirect: '/'})
+}
+
+const add_observed_symbol = (req, resp) => {
+    // const alerts_repo = new AlertsRepo(dao)
+    console.log("observed symbol adding exec")
+    console.log(req.headers.referer)
+    // var fileContent
+    // try {
+    //     fileContent = JSON.parse(fs.readFileSync(filePath));
+    // } catch (err) {
+    //     console.log("JSON parse")
+    //     console.log(err)
+    //     // handle your file not found (or other error) here
+    // }
+    // console.log(fileContent)
+    // fileContent.push(req.body)
+    // console.log(fileContent)
+
+    //fs.writeFileSync(filePath, JSON.stringify(fileContent, null, 2))
+    //alerts_repo.create(req.body).then(status=>console.log(status))
+    mysqlcon.create_observed_symbol(req.body.symbol).then(status=>console.log(status))
+    //resp.redirect(req.headers.referer);
+    resp.json({redirect: req.headers.referer})
 }
 
 const alert_delete = (req, resp) => {
@@ -101,16 +136,34 @@ const alert_delete = (req, resp) => {
     //resp.json({redirect: '/'})
 }
 
+const signal_observed_delete = (req, resp) => {
+    
+    var fileContent 
+    const symbol = req.params.symbol
+    
+
+    try {
+            mysqlsignal.deleteSignalObserved(symbol).then(dbd=>{
+            console.log(dbd)
+            resp.json({redirect: '/signalsobserved'})
+        });
+    } catch (err) {
+        console.log(err)
+        // handle your file not found (or other error) here
+    }
+    
+}
 const signal_getAll = (req, resp) => {
+    
     // const alerts_repo = new AlertsRepo(dao)
-    const fileContent = fs.readFileSync(__dirname+"\\signalresources.json");
+    const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
     const iconFolder = "signalicon/64/"
     const signalresources = JSON.parse(fileContent);
-    console.log(signalresources)
+    //console.log(signalresources)
     var data;
     var datadb = [{ "symbol": "DOGEUSDT", "period": "4h", "BuyScore": 4, "SellScore": 1 }];
     mysqlsignal.getLastSignals().then(data => {
-        console.log(data)
+        //console.log(data)
         data.sort(function (a, b) {
             if (a.buyScore > b.buyScore) {
                 return -1;
@@ -125,10 +178,15 @@ const signal_getAll = (req, resp) => {
         data.map(function (d) {
             const CrossTenkanKijun_img_id = d.CrossTenkanKijun
             const crossVSKumo_img_id = d.crossVSKumo
+            const m = new Date(d.startTime + 7200000 )
+            const mstop = new Date(d.stopTime + 7200000)
+            const msend = new Date(d.SendDate + 14400000)
             webdata.push({
+                "button_function":"add",
                 "symbol":d.symbol,
                 "period":d.period,
-                "startTime":new Date(d.startTime).toLocaleString("pl-PL"),
+                "startTime":m.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stopTime":mstop.toISOString("pl-PL").slice(0,-5).replace("T"," "),
                 "CrossTenkanKijun":d.CrossTenkanKijun,
                 "CrossTenkanKijun_img":signalresources.CrossTenkanKijun.hasOwnProperty(CrossTenkanKijun_img_id) ? iconFolder+signalresources.CrossTenkanKijun[CrossTenkanKijun_img_id]["img"]:"",
                 "crossVSKumo":d.crossVSKumo,
@@ -146,11 +204,12 @@ const signal_getAll = (req, resp) => {
                 "ChikouSpanVsPrice":d.ChikouSpanVsPrice,
                 "ChikouSpanVsPrice_img":signalresources.ChikouSpanVsPrice.hasOwnProperty(d.ChikouSpanVsPrice) ? iconFolder+signalresources.ChikouSpanVsPrice[d.ChikouSpanVsPrice]["img"]:"",
                 "buyScore":d.buyScore,
-                "sellScore":d.sellScore
+                "sellScore":d.sellScore,
+                "sendDate":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
             })
          })
-         console.log(webdata)
-        resp.render("SignalsView",{signals: webdata})
+         //console.log(webdata)
+        resp.render("SignalsView",{signals: webdata, observedsymbols: []})
     });
     // console.log("sygnały z DB pobranie:")
     //console.log(datadb)
@@ -170,11 +229,95 @@ const signal_getAll = (req, resp) => {
     // console.log(datadb)
     //resp.render("AlertGenerator", {alerts: data})
 }
+
+const signal_getObserved = async (req, resp) => {
+    
+    // const alerts_repo = new AlertsRepo(dao)
+    const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
+    const iconFolder = "signalicon/64/"
+    const signalresources = JSON.parse(fileContent);
+    //console.log(signalresources)
+    var dataasync = mysqlsignal.getLastObservedSignals()
+    var symbolasync = mysqlcon.getObservedSymbols()
+    var data = await dataasync
+    var observedsymbols = await symbolasync
+    console.log(observedsymbols)
+        //console.log(data)
+        data.sort(function (a, b) {
+            if (a.buyScore > b.buyScore) {
+                return -1;
+            }
+            if (a.buyScore < b.buyScore) {
+                return 1;
+            }
+            return 0;
+        }
+        )
+        let webdata = []
+        data.map(function (d) {
+            const CrossTenkanKijun_img_id = d.CrossTenkanKijun
+            const crossVSKumo_img_id = d.crossVSKumo
+            const m = new Date(d.startTime + 7200000 )
+            const mstop = new Date(d.stopTime + 7200000)
+            const msend = new Date(d.SendDate + 14400000)
+            webdata.push({
+                "button_function":"delete",
+                "symbol":d.symbol,
+                "period":d.period,
+                "startTime":m.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stopTime":mstop.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "CrossTenkanKijun":d.CrossTenkanKijun,
+                "CrossTenkanKijun_img":signalresources.CrossTenkanKijun.hasOwnProperty(CrossTenkanKijun_img_id) ? iconFolder+signalresources.CrossTenkanKijun[CrossTenkanKijun_img_id]["img"]:"",
+                "crossVSKumo":d.crossVSKumo,
+                "crossVSKumo_img":signalresources.crossVSKumo.hasOwnProperty(crossVSKumo_img_id) ? iconFolder+signalresources.crossVSKumo[crossVSKumo_img_id]["img"]:"",
+                "CrossPriceKijun":d.CrossPriceKijun,
+                "CrossPriceKijun_img":signalresources.crossVSKumo.hasOwnProperty(d.CrossPriceKijun) ? iconFolder+signalresources.CrossPriceKijun[d.CrossPriceKijun]["img"]:"",
+                "crossPriceChikou":d.crossPriceChikou,
+                "crossPriceChikou_img":signalresources.crossPriceChikou.hasOwnProperty(d.crossPriceChikou) ? iconFolder+signalresources.crossPriceChikou[d.crossPriceChikou]["img"]:"",
+                "kumoColor":d.kumoColor,
+                "kumoColor_img":signalresources.kumoColor.hasOwnProperty(d.kumoColor) ? iconFolder+signalresources.kumoColor[d.kumoColor]["img"]:"",
+                "priceVsKumo":d.priceVsKumo,
+                "priceVsKumo_img":signalresources.priceVsKumo.hasOwnProperty(d.priceVsKumo) ? iconFolder+signalresources.priceVsKumo[d.priceVsKumo]["img"]:"",
+                "Signal3Line":d.Signal3Line,
+                "Signal3Line_img":signalresources.Signal3Line.hasOwnProperty(d.Signal3Line) ? iconFolder+signalresources.Signal3Line[d.Signal3Line]["img"]:"",
+                "ChikouSpanVsPrice":d.ChikouSpanVsPrice,
+                "ChikouSpanVsPrice_img":signalresources.ChikouSpanVsPrice.hasOwnProperty(d.ChikouSpanVsPrice) ? iconFolder+signalresources.ChikouSpanVsPrice[d.ChikouSpanVsPrice]["img"]:"",
+                "buyScore":d.buyScore,
+                "sellScore":d.sellScore,
+                "sendDate":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
+            })
+         })
+        console.log(observedsymbols)
+        resp.render("SignalsView",{signals: webdata, observedsymbols: observedsymbols})
+    };
+    // console.log("sygnały z DB pobranie:")
+    //console.log(datadb)
+    //z mysql
+    //resp.render("SignalsView",{signals: datadb})
+    // try {
+    //         mysqlcon.getAll().then(dbd=>{datadb=dbd;
+    //         resp.render("AlertGenerator", {alerts: datadb})
+    //         console.log("Po promisie")
+    //         console.log(datadb)});
+    // } catch (err) {
+    //     console.log(err)
+    //     // handle your file not found (or other error) here
+    // }
+
+    // console.log("alerty z DB pobranie:")
+    // console.log(datadb)
+    //resp.render("AlertGenerator", {alerts: data})
+
+
 //signal_getAll()
 //alert_getAll()
 module.exports = {
     alert_delete,
     alert_create,
     alert_getAll,
-    signal_getAll
+    signal_getAll,
+    signal_getObserved,
+    arbitration,
+    add_observed_symbol,
+    signal_observed_delete
 }

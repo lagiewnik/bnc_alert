@@ -13,8 +13,11 @@ function getallsymbols() {
         //gv_symbols = gv_symbols.concat(ourData);
         var optionsAsString = '';
         //document.getElementById('currentprice').value = ourData[0]["price"];
+        var regx = new RegExp("USDT"+"$");
+        var regxUP = new RegExp("UPUSDT"+"$");
+        var regxDOWN = new RegExp("DOWNUSDT"+"$");
         var filteredPair = ourData.filter(function (entry){
-                return entry.symbol.includes("USDT") 
+                return regx.test(entry.symbol) & !(regxUP.test(entry.symbol)) & !(regxDOWN.test(entry.symbol))
         })
         let pairs = []
         const symbols = filteredPair.map(function (sp) {
@@ -31,3 +34,4 @@ function getallsymbols() {
 }
 
 getallsymbols()
+//process.exit(0)

@@ -4,8 +4,9 @@ function scoreSignal(analizeResult) {
     return new Promise(function(resolve, reject){
         let BuyScore = 0;
         let SellScore = 0
-        let textMsg = "Symbol: " + analizeResult[0].symbol + ". ";
-        textMsg = textMsg + "Interwał: " + analizeResult[0].interval + "\n"
+        let textMsg = "Price: " + parseFloat(analizeResult[0].currentPrice.toString()) + "\n";
+        let textSub = analizeResult[0].symbol + ". ";
+        
         // sygnał CrossTenkanKijun - przcięcie i położenie przecięcia
         switch (analizeResult[0].Signals.CrossTenkanKijun) {
             case 10: 
@@ -158,7 +159,8 @@ function scoreSignal(analizeResult) {
             default:        
         }
         console.log(BuyScore)
-        textMsg =   textMsg + "\n" + "buyScore: "+ BuyScore+" sellScore: "+ SellScore
+        textSub = textSub + " "+ BuyScore+" : "+ SellScore + ".      " +analizeResult[0].interval +"\n"
+        textMsg =   textSub + textMsg
         resolve({"buyScore": BuyScore, "sellScore":SellScore,"textMsg": textMsg})
         
     })

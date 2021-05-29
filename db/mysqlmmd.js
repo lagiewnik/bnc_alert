@@ -33,68 +33,6 @@ con.connect((err) => {
 
 
 
-function getLastRecord(name)
-{
-    return new Promise(function(resolve, reject){
-        var connection = con;
-
-        var query_str =
-            "SELECT * " +
-            "FROM records ";
-
-        var query_var = [name];
-
-        var query = connection.query(query_str, query_var, function (err, rows, fields) {
-            //if (err) throw err;
-            if (err) {
-                //throw err;
-                console.log(err);
-                logger.info(err);
-                reject(err);
-            }
-            else {
-                resolve(rows);
-                //console.log(rows);
-            }
-        }); //var query = connection.query(query_str, function (err, rows, fields) {
-    });
-}
-
-function create(content) {
-    return new Promise(function(resolve, reject){
-        var connection = con;
-        const {trid, symbol,alertOn,currency,conditional,price1,price2,gotSend} = content
-        
-
-        var query_str =
-        "INSERT INTO alerts (trid, symbol, alertOn, currency, conditional, price1, price2, gotSend)VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        var query_var = [trid, 
-            symbol,
-            alertOn,
-            currency,
-            conditional,
-            Number.isNaN(parseFloat(price1))? null : parseFloat(price1),
-            Number.isNaN(parseFloat(price2))? null : parseFloat(price2),
-            gotSend];
-        var query = connection.query(query_str, query_var, function (err, rows, fields) {
-            //if (err) throw err;
-            if (err) {
-                //throw err;
-                console.log(err);
-                logger.info(err);
-                reject(err);
-            }
-            else {
-                console.log(fields)
-                console.log(rows);
-                resolve(rows);
-                
-            }
-        });
-    })
-}
-
 function getLastSignals()
 {
     return new Promise(function(resolve, reject){
@@ -146,6 +84,7 @@ function getLastObservedSignals()
         }); //var query = connection.query(query_str, function (err, rows, fields) {
     });
 }
+//##
 function replace(content) {
     return new Promise(function(resolve, reject){
         var connection = con;
@@ -153,21 +92,14 @@ function replace(content) {
         const interval = content[0].interval;
         const startTime = content[0].startTime;
         const stopTime = content[0].stopTime;
-        const CrossTenkanKijun = content[0].Signals.CrossTenkanKijun
-        const crossVSKumo= content[0].Signals.crossVSKumo
-        const CrossPriceKijun= content[0].Signals.CrossPriceKijun
-        const crossPriceChikou= content[0].Signals.crossPriceChikou
-        const kumoColor= content[0].Signals.kumoColor
-        const priceVsKumo= content[0].Signals.priceVsKumo
-        const Signal3Line= content[0].Signals.Signal3Line
-        const ChikouSpanVsPrice= content[0].Signals.ChikouSpanVsPrice
+        const FastVsShortMMD = content[0].mmd_signals.FastVsShortMMD
+        const FastVsMiddleMMD= content[0].mmd_signals.FastVsMiddleMMD
+        const ShortVsMiddleMMD= content[0].mmd_signals.ShortVsMiddleMMD
+        
 
-        // var query_str =
-        // "REPLACE INTO ichimokuSignals (symbol, period, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        var query_str = "INSERT INTO ichimokuSignals (symbol, period, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE symbol=?, period=?, startTime=?, stopTime=?, FastVsShortMMD=?, FastVsMiddleMMD=?, ShortVsMiddleMMD=?;"
 
-        var query_str = "INSERT INTO ichimokuSignals (symbol, period, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE symbol=?, period=?, startTime=?, stopTime=?, CrossTenkanKijun=?, crossVSKumo=?, CrossPriceKijun=?, crossPriceChikou=?, kumoColor=?, priceVsKumo=?, Signal3Line=?, ChikouSpanVsPrice=?;"
-
-        var query_var = [symbol, interval, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice, symbol, interval, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice];
+        var query_var = [symbol, interval, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD, symbol, interval, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD];
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
             if (err) {
@@ -187,7 +119,7 @@ function replace(content) {
     })
 }
 
-
+//##
 function checkSignalWasSend(content) {
     return new Promise(function(resolve, reject){
         var connection = con;
@@ -195,18 +127,13 @@ function checkSignalWasSend(content) {
         const interval = content[0].interval;
         const startTime = content[0].startTime;
         const stopTime = content[0].stopTime;
-        const CrossTenkanKijun = content[0].Signals.CrossTenkanKijun
-        const crossVSKumo= content[0].Signals.crossVSKumo
-        const CrossPriceKijun= content[0].Signals.CrossPriceKijun
-        const crossPriceChikou= content[0].Signals.crossPriceChikou
-        const kumoColor= content[0].Signals.kumoColor
-        const priceVsKumo= content[0].Signals.priceVsKumo
-        const Signal3Line= content[0].Signals.Signal3Line
-        const ChikouSpanVsPrice= content[0].Signals.ChikouSpanVsPrice
+        const FastVsShortMMD = content[0].mmd_signals.FastVsShortMMD
+        const FastVsMiddleMMD= content[0].mmd_signals.FastVsMiddleMMD
+        const ShortVsMiddleMMD= content[0].mmd_signals.ShortVsMiddleMMD
 
         
-        var query_str ="SELECT count(*) as count FROM ichimokuSignals WHERE (symbol = ? AND period = ? AND startTime = ? AND stopTime = ? AND CrossTenkanKijun=? AND crossVSKumo=? AND CrossPriceKijun=? AND crossPriceChikou=? AND kumoColor=? AND priceVsKumo=? AND Signal3Line=? AND ChikouSpanVsPrice=? AND SendAlert=?)";
-        var query_var = [symbol, interval, startTime, stopTime, CrossTenkanKijun, crossVSKumo, CrossPriceKijun, crossPriceChikou, kumoColor, priceVsKumo, Signal3Line, ChikouSpanVsPrice, 1];
+        var query_str ="SELECT count(*) as count FROM ichimokuSignals WHERE (symbol = ? AND period = ? AND startTime = ? AND stopTime = ? AND FastVsShortMMD = ? AND FastVsMiddleMMD = ? AND ShortVsMiddleMMD = ? AND SendAlertMMD=?)";
+        var query_var = [symbol, interval, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD, 1];
 
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
@@ -225,6 +152,7 @@ function checkSignalWasSend(content) {
         });
     })
 }
+//#
 function updateSendSignalStatus(content){
     return new Promise(function(resolve, reject){
         var connection = con;
@@ -236,7 +164,7 @@ function updateSendSignalStatus(content){
         const nowData = new Date();
         
         var query_str =
-        "UPDATE ichimokuSignals SET SendAlert = 1, SendDate = ? WHERE symbol = ? AND period = ? AND startTime = ? AND stopTime = ?";
+        "UPDATE ichimokuSignals SET SendAlertMMD = 1, SendDateMMD = ? WHERE symbol = ? AND period = ? AND startTime = ? AND stopTime = ?";
         var query_var = [nowData, symbol, interval, startTime, stopTime];
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
@@ -256,7 +184,7 @@ function updateSendSignalStatus(content){
         });
     })
   }
-
+//#
 function updateBuySellScore(content,buyScore,sellScore){
     return new Promise(function(resolve, reject){
         var connection = con;
@@ -267,7 +195,7 @@ function updateBuySellScore(content,buyScore,sellScore){
         const stopTime = content[0].stopTime;
         
         var query_str =
-        "UPDATE ichimokuSignals SET buyScore = ?, sellScore = ? WHERE symbol = ? AND period = ? AND startTime = ? AND stopTime = ?";
+        "UPDATE ichimokuSignals SET mmdBuyScore = ?, mmdSellScore = ? WHERE symbol = ? AND period = ? AND startTime = ? AND stopTime = ?";
         var query_var = [buyScore, sellScore, symbol, interval, startTime, stopTime];
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
@@ -490,7 +418,6 @@ console.log(getLastSignals())
 module.exports = {
     getAll,
     deleteRow,
-    create,
     update,
     replace,
     getLastSignals,

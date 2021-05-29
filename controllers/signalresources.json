@@ -37,42 +37,42 @@
    },
    "kumoColor":{
       "10":{
-         "img":"upc_g.png"
+         "img":"kumo_color10.png"
       },
       "-10":{
-         "img":"downc_r.png"
+         "img":"kumo_color-10.png"
       },
       "5":{
-         "img":"upc_g.png"
+         "img":"kumo_color5.png"
       },
       "-5":{
-         "img":"downc_r.png"
+         "img":"kumo_color-5.png"
       }
    },
    "priceVsKumo":{
       "10":{
-         "img":"pr_kum_up10_g.png"
+         "img":"price_vs_kumo10.png"
       },
       "-10":{
-         "img":"pr_kum_down10_r.png"
+         "img":"price_vs_kumo-10.png"
       },
       "11":{
-         "img":"pr_kum_up11_g.png"
+         "img":"price_vs_kumo11.png"
       },
       "-11":{
-         "img":"pr_kum_down11_r.png"
+         "img":"price_vs_kumo-11.png"
       },
       "15":{
-         "img":"pr_kum_up15_g.png"
+         "img":"price_vs_kumo15.png"
       },
       "-15":{
-         "img":"pr_kum_down15_r.png"
+         "img":"price_vs_kumo-15.png"
       },
       "5":{
-         "img":"upc_g.png"
+         "img":"price_vs_kumo5.png"
       },
       "-5":{
-         "img":"downc_r.png"
+         "img":"price_vs_kumo-5.png"
       }
    },
    "Signal3Line":{
@@ -86,7 +86,7 @@
          "img":"s3line_up5_g.png"
       },
       "-5":{
-         "img":"downc_r.png"
+         "img":"s3line_down5c_r.png"
       }
    },
    "ChikouSpanVsPrice":{

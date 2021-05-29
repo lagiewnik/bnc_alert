@@ -18,104 +18,141 @@
 <body>
     <script type="text/javascript">
         changeBackgroundColor();
-        </script>
+    </script>
     <div class="topnav">
-        <a class="active" href="/">Alerts</a>
-        <a href="/signals">Signals</a>
-      </div> 
-    <div class="container"> 
-    <br>
-    <div class="container">
-
-        <h1>Signals</h1>
-        <p>Aktualne sygnały</p>
-        <table id="dptable" class="table sortable">
-            <thead>
-                <tr>
-                    <th>Symbol</th>
-                    <th>Period</th>
-                    <th>Od</th>
-                    <th>Do</th>
-                    <th>BuyScore</th>
-                    <th>SellScore</th>
-                    <th>CrossTenkanKijun</th>
-                    <th>crossVSKumo</th>
-                    <th>CrossPriceKijun</th>
-                    <th>crossPriceChikou</th>
-                    <th>kumoColor</th>
-                    <th>priceVsKumo</th>
-                    <th>Signal3Line</th>
-                    <th>ChikouSpanVsPrice</th>
-                    <th>SendAlert</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                <% if (signals.length> 0) { %>
-                    <% signals.forEach(sig=> { %>
-                        <tr>
-                            <td><span class="dpsym">
-                                    <%= sig.symbol %>
-                                </span></td>
-                            <td><span class="dpaon">
-                                    <%= sig.period %>
-                                </span></td>
-                            <td><span class="dpcurtype">
-                                    <%= sig.startTime %>
-                                </span></td>
-                            <td><span class="dpcond">
-                                    <%= sig.stopTime %>
-                                </span></td>
-                                <td><span class="dpprice1">
-                                    <%= sig.buyScore %>
-            
-                                </span></td>
-                            <td><span class="dpprice2">
-                                    <%= sig.sellScore %>
-                                </span></td>
-                            <td><span class="indicator">
-                                    <%= sig.CrossTenkanKijun %>
-                                    <img src="<%= sig.CrossTenkanKijun_img %>" alt>
-                                </span></td>
-                            <td><span class="indicator">
-                                    <%= sig.crossVSKumo %>
-                                    <img src="<%= sig.crossVSKumo_img %>" alt>
-                                </span></td>
-                                <td><span class="indicator">
-                                    <%= sig.CrossPriceKijun %>
-                                    <img src="<%= sig.CrossPriceKijun_img %>" alt>
-                                </span></td>
-                                <td><span class="indicator">
-                                    <%= sig.crossPriceChikou %>
-                                    <img src="<%= sig.crossPriceChikou_img %>" alt>
-                                </span></td>
-                                <td><span class="indicator">
-                                    <%= sig.kumoColor %>
-                                    <img src="<%= sig.kumoColor_img %>" alt>
-                                </span></td>
-                                <td><span class="indicator">
-                                    <%= sig.priceVsKumo %>
-                                    <img src="<%= sig.priceVsKumo_img %>" alt>
-                                </span></td>
-                                <td><span class="indicator">
-                                    <%= sig.Signal3Line %>
-                                    <img src="<%= sig.Signal3Line_img %>" alt>
-                                </span></td>
-                                <td><span class="indicator">
-                                    <%= sig.ChikouSpanVsPrice %>
-                                    <img src="<%= sig.ChikouSpanVsPrice_img %>" alt>
-                                </span></td>
-                        </tr>
-                        <% }) %>
-                            <% } %>
-            </tbody>
-        </table>
-        
-
-
+        <a href="/">Alerts</a>
+        <a class="active" href="/signals">Signals</a>
+        <a href="/signalsobserved">Observed</a>
+        <a href="/arbitration">Arbitraż</a>
     </div>
-    <footer>
-    </footer>
+    <div class="container">
+        <br>
+        <div class="container">
+
+            <h1>Signals</h1>
+            <p>Aktualne sygnały</p>
+            
+            <table id="dptable" class="table sortable">
+                <thead>
+                    <tr>
+                        <th>Observe</th>
+                        <th>Symbol</th>
+                        <th>Period</th>
+                        <th>Od</th>
+                        <th>SendDate</th>
+                        <th>BuyScore</th>
+                        <th>SellScore</th>
+                        <th>CrossTenkanKijun</th>
+                        <th>crossVSKumo</th>
+                        <th>CrossPriceKijun</th>
+                        <th>crossPriceChikou</th>
+                        <th>kumoColor</th>
+                        <th>priceVsKumo</th>
+                        <th>Signal3Line</th>
+                        <th>ChikouSpanVsPrice</th>
+                        <th>SendAlert</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (signals.length> 0) { %>
+                        <% signals.forEach(sig=> { %>
+                            <tr>
+                                <td><input symbol="<%= sig.symbol %>" type="button"
+                                        class="btn btn-dark form-control <%= sig.button_function %>-symbol-observed"
+                                        value="<%= sig.button_function %>"></td>
+                                <td><span class="dpsym">
+                                        <%= sig.symbol %>
+                                    </span>
+                                </td>
+                                <td><span class="dpaon">
+                                        <%= sig.period %>
+                                    </span></td>
+                                <td><span class="dpcurtype">
+                                        <%= sig.startTime %>
+                                    </span></td>
+                                <td><span class="dpcond">
+                                        <%= sig.sendDate %>
+                                    </span></td>
+                                <td><span class="dpprice1">
+                                        <%= sig.buyScore %>
+
+                                    </span></td>
+                                <td><span class="dpprice2">
+                                        <%= sig.sellScore %>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.CrossTenkanKijun %>
+                                            <img src="<%= sig.CrossTenkanKijun_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.crossVSKumo %>
+                                            <img src="<%= sig.crossVSKumo_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.CrossPriceKijun %>
+                                            <img src="<%= sig.CrossPriceKijun_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.crossPriceChikou %>
+                                            <img src="<%= sig.crossPriceChikou_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.kumoColor %>
+                                            <img src="<%= sig.kumoColor_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.priceVsKumo %>
+                                            <img src="<%= sig.priceVsKumo_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.Signal3Line %>
+                                            <img src="<%= sig.Signal3Line_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.ChikouSpanVsPrice %>
+                                            <img src="<%= sig.ChikouSpanVsPrice_img %>" alt>
+                                    </span></td>
+                            </tr>
+                            <% }) %>
+                                <% } %>
+                </tbody>
+            </table>
+            <div class="form-group col-sm-2">
+                <table>
+                    <tr>
+                        <td>
+                            <select style='width:auto;' name="currency" id="currency" placeholder="Id"
+                                class="chosen-select form-control"></select>
+                        </td>
+                        <td><input id="symboladd" type="button" class="btn btn-dark form-control"
+                                value="Add to observed"></td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="form-group col-sm-2">
+                <table><tbody>
+                    <% if (observedsymbols.length> 0) { %>
+                        <% observedsymbols.forEach(sig=> { %>
+                            <tr>
+                                <td><input symbol="<%= sig.symbol %>" type="button"
+                                        class="btn btn-dark form-control delete-symbol-observed"
+                                        value="delete"></td>
+                                <td><span class="dpsym">
+                                        <%= sig.symbol %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } %>
+                </tbody></table>
+            </div>
+
+
+        </div>
+        <footer>
+        </footer>
 </body>
 
 
@@ -125,21 +162,122 @@
 
 
     $(document).ready(function () {
-        console.log("TEST")
+        getallsymbols()
         changeBackgroundColor()
     })
 
+    function getallsymbols() {
+        var ourRequest1 = new XMLHttpRequest();
+        var url = 'https://api.binance.com/api/v3/ticker/price';
+        ourRequest1.open('GET', url, true);
+        ourRequest1.onload = function () {
+            ourData = JSON.parse(ourRequest1.responseText);
+            var regx = new RegExp("USDT" + "$");
+            var regxUP = new RegExp("UPUSDT" + "$");
+            var regxDOWN = new RegExp("DOWNUSDT" + "$");
+            var regxETH = new RegExp("ETH$");
+            var regxBNB = new RegExp("BNB$");
+            var regxBTC = new RegExp("BTC$");
+            ourData = ourData.filter(function (entry) {
+                return (regx.test(entry.symbol) & !(regxUP.test(entry.symbol)) & !(regxDOWN.test(entry.symbol)))
+            })
+            ourData.sort(function (a, b) {
+                if (a.symbol < b.symbol) {
+                    return -1;
+                }
+                if (a.symbol > b.symbol) {
+                    return 1;
+                }
+                return 0;
+            }
+            )
+            console.log(ourData)
+            //gv_symbols = gv_symbols.concat(ourData);
+            var optionsAsString = '';
+            //document.getElementById('currentprice').value = ourData[0]["price"];
+            for (i = 0; i < ourData.length; i++) {
+                optionsAsString += "<option value='" + ourData[i]["symbol"] + "'>" + ourData[i]["symbol"] + "</option>";
+            }
+            $('select[name="currency"]').append(optionsAsString);
+        }
+        ourRequest1.send();
+    }
     function changeBackgroundColor() {
         var elements = document.getElementsByClassName("indicator")
         for (var i = 0; i < elements.length; i++) {
             var value = parseInt(elements[i].innerText)
-            if(value>0)
-            {
-            elements[i].parentElement.style.backgroundColor = '#cdfdc3';
+            if (value > 0) {
+                elements[i].parentElement.style.backgroundColor = '#cdfdc3';
             }
-            else if(value<0){
-            elements[i].parentElement.style.backgroundColor = '#ffbfbf';
+            else if (value < 0) {
+                elements[i].parentElement.style.backgroundColor = '#ffbfbf';
             }
         }
     }
+    $(".delete-symbol-observed").click(function (e) {
+
+        var symbol = e.target.getAttribute("symbol");
+        //$(this).parents("tr").remove();
+        const deleteEndpoint = '/signalsobserved/' + symbol
+        fetch(deleteEndpoint, {
+            method: "DELETE"
+        }).then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                window.location.href = data.redirect
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+
+    });
+
+    $(".add-symbol-observed").click(function (e) {
+        var symbol = e.target.getAttribute("symbol");
+        console.log("symbol data: " + symbol)
+
+        dataToSend = JSON.stringify({ "symbol": symbol });
+        console.log("datasend create alert:");
+        console.log(dataToSend);
+        fetch('/signals/' + symbol, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: dataToSend
+        }).then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                window.location.href = data.redirect
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    });
+
+    $("#symboladd").click(function (e) {
+        var symbol = $("#currency option:selected").text().trim();
+        console.log("symbol data: " + symbol)
+
+        dataToSend = JSON.stringify({ "symbol": symbol });
+        console.log("datasend create alert:");
+        console.log(dataToSend);
+        fetch('/signals/' + symbol, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: dataToSend
+        }).then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                window.location.href = data.redirect
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    });
 </script>
