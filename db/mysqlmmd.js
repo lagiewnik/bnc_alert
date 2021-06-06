@@ -39,7 +39,7 @@ function getLastSignals()
         var connection = con;
 
         var query_str =
-            'select * from ichimokuSignals where ((period = "4h" AND stopTime > (UNIX_TIMESTAMP()-3600)*1000 ) OR (period = "1d" AND stopTime > (UNIX_TIMESTAMP()-3600)*1000 ))';
+            'select * from ichimokuSignals where ( stopTime > (UNIX_TIMESTAMP()-3600)*1000)';
 
         var query_var = [];
 

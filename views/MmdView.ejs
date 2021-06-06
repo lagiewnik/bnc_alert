@@ -25,7 +25,7 @@
         <br>
         <div class="container">
 
-            <h1>Signals</h1>
+            <h1>MMD Sygnały</h1>
             <p>Aktualne sygnały</p>
             
             <table id="dptable" class="table sortable">
@@ -36,16 +36,11 @@
                         <th>Period</th>
                         <th>Od</th>
                         <th>SendDate</th>
-                        <th>BuyScore</th>
-                        <th>SellScore</th>
-                        <th>CrossTenkanKijun</th>
-                        <th>crossVSKumo</th>
-                        <th>CrossPriceKijun</th>
-                        <th>crossPriceChikou</th>
-                        <th>kumoColor</th>
-                        <th>priceVsKumo</th>
-                        <th>Signal3Line</th>
-                        <th>ChikouSpanVsPrice</th>
+                        <th>mmdBuyScore</th>
+                        <th>mmdSellScore</th>
+                        <th>FastVsShortMMD</th>
+                        <th>FastVsMiddleMMD</th>
+                        <th>ShortVsMiddleMMD</th>
                         <th>SendAlert</th>
 
                     </tr>
@@ -68,46 +63,26 @@
                                         <%= sig.startTime %>
                                     </span></td>
                                 <td><span class="dpcond">
-                                        <%= sig.sendDate %>
+                                        <%= sig.sendDateMMD %>
                                     </span></td>
                                 <td><span class="dpprice1">
-                                        <%= sig.buyScore %>
+                                        <%= sig.mmdBuyScore %>
 
                                     </span></td>
                                 <td><span class="dpprice2">
-                                        <%= sig.sellScore %>
+                                        <%= sig.mmdSellScore %>
                                     </span></td>
                                 <td><span class="indicator">
-                                        <%= sig.CrossTenkanKijun %>
-                                            <img src="<%= sig.CrossTenkanKijun_img %>" alt>
+                                        <%= sig.FastVsShortMMD %>
+                                            
                                     </span></td>
                                 <td><span class="indicator">
-                                        <%= sig.crossVSKumo %>
-                                            <img src="<%= sig.crossVSKumo_img %>" alt>
+                                        <%= sig.FastVsMiddleMMD %>
+                                            
                                     </span></td>
                                 <td><span class="indicator">
-                                        <%= sig.CrossPriceKijun %>
-                                            <img src="<%= sig.CrossPriceKijun_img %>" alt>
-                                    </span></td>
-                                <td><span class="indicator">
-                                        <%= sig.crossPriceChikou %>
-                                            <img src="<%= sig.crossPriceChikou_img %>" alt>
-                                    </span></td>
-                                <td><span class="indicator">
-                                        <%= sig.kumoColor %>
-                                            <img src="<%= sig.kumoColor_img %>" alt>
-                                    </span></td>
-                                <td><span class="indicator">
-                                        <%= sig.priceVsKumo %>
-                                            <img src="<%= sig.priceVsKumo_img %>" alt>
-                                    </span></td>
-                                <td><span class="indicator">
-                                        <%= sig.Signal3Line %>
-                                            <img src="<%= sig.Signal3Line_img %>" alt>
-                                    </span></td>
-                                <td><span class="indicator">
-                                        <%= sig.ChikouSpanVsPrice %>
-                                            <img src="<%= sig.ChikouSpanVsPrice_img %>" alt>
+                                        <%= sig.ShortVsMiddleMMD %>
+                                           
                                     </span></td>
                             </tr>
                             <% }) %>

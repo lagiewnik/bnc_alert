@@ -6,6 +6,7 @@ const Promise = require('bluebird')
 
 const mysqlcon = require('../db/mysqldao.js')
 const mysqlsignal = require('../db/mysqlichimoku.js')
+const mysqlmmd = require('../db/mysqlmmd.js')
 
 const arbitration = (req, resp) => {
     try {resp.render("ArbitrageView")} 
@@ -230,6 +231,53 @@ const signal_getAll = (req, resp) => {
     //resp.render("AlertGenerator", {alerts: data})
 }
 
+const mmdall = (req, resp) => {
+    
+    // const alerts_repo = new AlertsRepo(dao)
+    const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
+    const iconFolder = "signalicon/64/"
+    const signalresources = JSON.parse(fileContent);
+    //console.log(signalresources)
+    var data;
+    var datadb = [{ "symbol": "DOGEUSDT", "period": "4h", "BuyScore": 4, "SellScore": 1 }];
+    mysqlmmd.getLastSignals().then(data => {
+        //console.log(data)
+        data.sort(function (a, b) {
+            if (a.mmdBuyScore > b.mmdBuyScore) {
+                return -1;
+            }
+            if (a.mmdBuyScore < b.mmdBuyScore) {
+                return 1;
+            }
+            return 0;
+        }
+        )
+        let webdata = []
+        data.map(function (d) {
+            const CrossTenkanKijun_img_id = d.CrossTenkanKijun
+            const crossVSKumo_img_id = d.crossVSKumo
+            const m = new Date(d.startTime + 7200000 )
+            const mstop = new Date(d.stopTime + 7200000)
+            const msend = new Date(d.SendDateMMD + 14400000)
+            webdata.push({
+                "button_function":"add",
+                "symbol":d.symbol,
+                "period":d.period,
+                "startTime":m.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stopTime":mstop.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "FastVsShortMMD":d.FastVsShortMMD,
+                "FastVsMiddleMMD":d.FastVsMiddleMMD,
+                "ShortVsMiddleMMD":d.ShortVsMiddleMMD,
+                "mmdBuyScore":d.mmdBuyScore,
+                "mmdSellScore":d.mmdSellScore,
+                "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
+            })
+         })
+         //console.log(webdata)
+        resp.render("MmdView",{signals: webdata, observedsymbols: []})
+    });
+    
+}
 const signal_getObserved = async (req, resp) => {
     
     // const alerts_repo = new AlertsRepo(dao)
@@ -319,5 +367,6 @@ module.exports = {
     signal_getObserved,
     arbitration,
     add_observed_symbol,
-    signal_observed_delete
+    signal_observed_delete,
+    mmdall
 }

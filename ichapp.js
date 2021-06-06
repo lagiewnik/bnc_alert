@@ -1,8 +1,9 @@
 const axios = require('axios');
+var _ = require('lodash')
 var path = require("path");
 const mailSender = require(__dirname + '/sender/mailer')
 const telegramSend = require(__dirname + '/sender/telegram')
-const { readPair, createMockData } = require(__dirname + '/file.js');
+const { readPair, createMockData, readJsonFromFile } = require(__dirname + '/file.js');
 const ichimokuTools = require(__dirname + '/tools/ichimokuSpanAnalize')
 const ichimokuScore = require(__dirname + '/tools/ichimokuInterprateAndSendSignal')
 const dataFolder = __dirname + "/calcresults/"
@@ -14,6 +15,8 @@ const mmd_calculate = require(__dirname + '/tools/mmd/mmd_calculate.js')
 const mmd_tools = require(__dirname + '/tools/mmd/mmd_tools.js')
 const mmdScore = require(__dirname + '/tools/mmd/mmdInterprateAndSendSignal.js')
 const binanceApiEndpoint = 'https://api.binance.com';
+const intervalsIchimoku = readJsonFromFile(__dirname + '/config/intervals.json').ichimoku
+const intervalsMmd = readJsonFromFile(__dirname + '/config/intervals.json').mmd
 
 const axiosInstance = axios.create({
   headers: {
@@ -27,13 +30,12 @@ const axiosInstance = axios.create({
 const DEBUG = false;
 
 const candleTimeRangeMap = new Map();
-//candleTimeRangeMap.set('1h', { timeDuration: 3600000, addtionTime: 0});
-candleTimeRangeMap.set('4h', { timeDuration: 14400000, addtionTime: 0 });
-candleTimeRangeMap.set('1d', { timeDuration: 86400000, addtionTime: 0 });
-//candleTimeRangeMap.set('3d', { timeDuration: 259200000, addtionTime: 172800000});
-//candleTimeRangeMap.set('1w', { timeDuration: 604800000, addtionTime: 259200000});
+//candleTimeRangeMap.set('15m', { timeDuration: 900000, addtionTime: 0});
+candleTimeRangeMap.set('1h', { timeDuration: 3600000, addtionTime: 0});
+//candleTimeRangeMap.set('4h', { timeDuration: 14400000, addtionTime: 0 });
+//candleTimeRangeMap.set('1d', { timeDuration: 86400000, addtionTime: 0 });
 
-const symbolList = readPair(__dirname + '/pair.txt');
+const symbolList = readPair(__dirname + '/config/pair.txt');
 //const symbolList = ["CHZUSDT"]
 console.log("Count of symbol: " + symbolList.length);
 
@@ -189,7 +191,7 @@ async function notify(analizeResult, timeRangeKey, symbol, observedSymbols = [])
         mysqlcon.replace(analizeResult)
         ichimokuScore.scoreSignal(analizeResult).then(is => {
           mysqlcon.updateBuySellScore(analizeResult, is.buyScore, is.sellScore)
-          if (observedSymbols.length == 0 || observedSymbols.some(item=>item.symbol==symbol)) {
+          if (true||observedSymbols.length == 0 || observedSymbols.some(item=>item.symbol==symbol)) {
             telegramSend.sendTelegramRawMsg(is.textMsg)
             mysqlcon.updateSendSignalStatus(analizeResult)
           }
@@ -217,7 +219,7 @@ async function notifyMMD(analizeResult, timeRangeKey, symbol, observedSymbols = 
         mysqlconmmd.replace(analizeResult)
         mmdScore.scoreSignal(analizeResult).then(is => {
           mysqlconmmd.updateBuySellScore(analizeResult, is.buyScore, is.sellScore)
-          if (observedSymbols.length == 0 || observedSymbols.some(item=>item.symbol==symbol)) {
+          if (true||observedSymbols.length == 0 || observedSymbols.some(item=>item.symbol==symbol)) {
             telegramSend.sendTelegramRawMsg(is.textMsg)
             mysqlconmmd.updateSendSignalStatus(analizeResult)
           }
@@ -240,7 +242,8 @@ async function main() {
     console.log("Start execution")
     console.log(candleTimeRangeMap)
     console.log(candleTimeRangeMap.values())
-    const candleTimeRangeMapKeys = [...candleTimeRangeMap.keys()];
+    //const candleTimeRangeMapKeys = [...candleTimeRangeMap.keys()];
+    const candleTimeRangeMapKeys = _.union(intervalsIchimoku,intervalsMmd)
 
     var observedSymbols = mysqldb.getObservedSymbols();
     var obsSymbols = await observedSymbols;

@@ -18,13 +18,8 @@
 
 <body>
 
+    <%- include('navbar.ejs') %>
     
-    <div class="topnav">
-        <a  href="/">Alerts</a>
-        <a href="/signals">Signals</a>
-        <a href="/signalsobserved">Observed</a>
-        <a class="active" href="/arbitration">Arbitraż</a>
-    </div> 
     <div class="form-group col-sm-2">
         <select onchange="defaultPrices()" name="currency" id="currency" placeholder="Id"
             class="chosen-select form-control"></select>

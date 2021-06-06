@@ -16,6 +16,7 @@ router.get('/',alertController.alert_getAll)
 router.get('/signalsobserved',alertController.signal_getObserved)
 router.get('/signals',alertController.signal_getAll)
 router.get('/arbitration', alertController.arbitration)
+router.get('/mmdall', alertController.mmdall)
 
 
 
