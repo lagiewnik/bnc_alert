@@ -15,8 +15,11 @@ const mmd_calculate = require(__dirname + '/tools/mmd/mmd_calculate.js')
 const mmd_tools = require(__dirname + '/tools/mmd/mmd_tools.js')
 const mmdScore = require(__dirname + '/tools/mmd/mmdInterprateAndSendSignal.js')
 const binanceApiEndpoint = 'https://api.binance.com';
-const intervalsIchimoku = readJsonFromFile(__dirname + '/config/intervals.json').ichimoku
-const intervalsMmd = readJsonFromFile(__dirname + '/config/intervals.json').mmd
+const configFileContent = readJsonFromFile(__dirname + '/config/config.json')
+const intervalsIchimoku = configFileContent.intervals.ichimoku
+const intervalsMmd = configFileContent.intervals.mmd
+const notifyOnlyObservedIchimoku = configFileContent.notifyOnlyObservedIchimoku
+const notifyOnlyObservedMmd = configFileContent.notifyOnlyObservedMmd
 
 const axiosInstance = axios.create({
   headers: {
@@ -191,7 +194,7 @@ async function notify(analizeResult, timeRangeKey, symbol, observedSymbols = [])
         mysqlcon.replace(analizeResult)
         ichimokuScore.scoreSignal(analizeResult).then(is => {
           mysqlcon.updateBuySellScore(analizeResult, is.buyScore, is.sellScore)
-          if (true||observedSymbols.length == 0 || observedSymbols.some(item=>item.symbol==symbol)) {
+          if (!notifyOnlyObservedIchimoku|| observedSymbols.some(item=>item.symbol==symbol)) {
             telegramSend.sendTelegramRawMsg(is.textMsg)
             mysqlcon.updateSendSignalStatus(analizeResult)
           }
@@ -219,7 +222,7 @@ async function notifyMMD(analizeResult, timeRangeKey, symbol, observedSymbols = 
         mysqlconmmd.replace(analizeResult)
         mmdScore.scoreSignal(analizeResult).then(is => {
           mysqlconmmd.updateBuySellScore(analizeResult, is.buyScore, is.sellScore)
-          if (true||observedSymbols.length == 0 || observedSymbols.some(item=>item.symbol==symbol)) {
+          if (!notifyOnlyObservedMmd||observedSymbols.some(item=>item.symbol==symbol)) {
             telegramSend.sendTelegramRawMsg(is.textMsg)
             mysqlconmmd.updateSendSignalStatus(analizeResult)
           }
