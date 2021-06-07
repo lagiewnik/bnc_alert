@@ -34,7 +34,7 @@ const DEBUG = false;
 
 const candleTimeRangeMap = new Map();
 //candleTimeRangeMap.set('15m', { timeDuration: 900000, addtionTime: 0});
-candleTimeRangeMap.set('1h', { timeDuration: 3600000, addtionTime: 0});
+candleTimeRangeMap.set('1h', { timeDuration: 3600000, addtionTime: 0 });
 //candleTimeRangeMap.set('4h', { timeDuration: 14400000, addtionTime: 0 });
 //candleTimeRangeMap.set('1d', { timeDuration: 86400000, addtionTime: 0 });
 
@@ -185,7 +185,7 @@ async function notify(analizeResult, timeRangeKey, symbol, observedSymbols = [])
   const is = ichimokuScore.scoreSignal(analizeResult).then(is => console.log(is));
   console.log("observedSymbols w notifaju dla symbolu:" + symbol)
   console.log(observedSymbols)
-  console.log(observedSymbols.some(item=>item.symbol===symbol))
+  console.log(observedSymbols.some(item => item.symbol === symbol))
   try {
     mysqlcon.checkSignalWasSend(analizeResult).then(row => {
       console.log("wiersze juz istniejace: " + row[0].count)
@@ -194,7 +194,7 @@ async function notify(analizeResult, timeRangeKey, symbol, observedSymbols = [])
         mysqlcon.replace(analizeResult)
         ichimokuScore.scoreSignal(analizeResult).then(is => {
           mysqlcon.updateBuySellScore(analizeResult, is.buyScore, is.sellScore)
-          if (!notifyOnlyObservedIchimoku|| observedSymbols.some(item=>item.symbol==symbol)) {
+          if (!notifyOnlyObservedIchimoku || observedSymbols.some(item => item.symbol == symbol)) {
             telegramSend.sendTelegramRawMsg(is.textMsg)
             mysqlcon.updateSendSignalStatus(analizeResult)
           }
@@ -213,7 +213,7 @@ async function notifyMMD(analizeResult, timeRangeKey, symbol, observedSymbols = 
   const is = mmdScore.scoreSignal(analizeResult).then(is => console.log(is));
   console.log("observedSymbols w notifaju dla symbolu:" + symbol)
   console.log(observedSymbols)
-  console.log(observedSymbols.some(item=>item.symbol===symbol))
+  console.log(observedSymbols.some(item => item.symbol === symbol))
   try {
     mysqlconmmd.checkSignalWasSend(analizeResult).then(row => {
       console.log("wiersze juz istniejace: " + row[0].count)
@@ -222,7 +222,7 @@ async function notifyMMD(analizeResult, timeRangeKey, symbol, observedSymbols = 
         mysqlconmmd.replace(analizeResult)
         mmdScore.scoreSignal(analizeResult).then(is => {
           mysqlconmmd.updateBuySellScore(analizeResult, is.buyScore, is.sellScore)
-          if (!notifyOnlyObservedMmd||observedSymbols.some(item=>item.symbol==symbol)) {
+          if (!notifyOnlyObservedMmd || observedSymbols.some(item => item.symbol == symbol)) {
             telegramSend.sendTelegramRawMsg(is.textMsg)
             mysqlconmmd.updateSendSignalStatus(analizeResult)
           }
@@ -246,7 +246,7 @@ async function main() {
     console.log(candleTimeRangeMap)
     console.log(candleTimeRangeMap.values())
     //const candleTimeRangeMapKeys = [...candleTimeRangeMap.keys()];
-    const candleTimeRangeMapKeys = _.union(intervalsIchimoku,intervalsMmd)
+    const candleTimeRangeMapKeys = _.union(intervalsIchimoku, intervalsMmd)
 
     var observedSymbols = mysqldb.getObservedSymbols();
     var obsSymbols = await observedSymbols;
@@ -272,30 +272,33 @@ async function main() {
           saveData(analyzeResult, timeRangeKey, symbol, 1, 0);
           if (DEBUG) console.log('Data saved.');
 
-          let signalData = prepareSignalData(analyzeResult);
-          if (DEBUG) console.log('Signal data result = ', signalData);
-          if (signalData.length > 0) {
-            if (DEBUG) console.log('Sending notification..');
-            //const is = ichimokuScore.scoreSignal(signalData).then(is => console.log(is));
-            //console.log(is)
-            notify(signalData, timeRangeKey, symbol, obsSymbols);
-            if (DEBUG) console.log('Notification sent.');
-          } else {
-            if (DEBUG) console.log('Signal data is empty - no need to send notification.');
+          if (intervalsIchimoku.some(interval => interval === timeRangeKey)) {
+            let signalData = prepareSignalData(analyzeResult);
+            if (DEBUG) console.log('Signal data result = ', signalData);
+            if (signalData.length > 0) {
+              if (DEBUG) console.log('Sending notification..');
+              //const is = ichimokuScore.scoreSignal(signalData).then(is => console.log(is));
+              //console.log(is)
+              notify(signalData, timeRangeKey, symbol, obsSymbols);
+              if (DEBUG) console.log('Notification sent.');
+            } else {
+              if (DEBUG) console.log('Signal data is empty - no need to send notification.');
+            }
           }
 
-          let signalMmd  = prepareSignalMmd(analyzeResult);
-          if (DEBUG) console.log('Signal data mmd result = ', signalMmd);
-          if (signalMmd.length > 0) {
-            if (DEBUG) console.log('Sending notification..');
-            //const is = ichimokuScore.scoreSignal(signalData).then(is => console.log(is));
-            //console.log(is)
-            notifyMMD(signalMmd, timeRangeKey, symbol, []);
-            if (DEBUG) console.log('Notification sent.');
-          } else {
-            if (DEBUG) console.log('Signal data is empty - no need to send notification.');
+          if (intervalsMmd.some(interval => interval === timeRangeKey)) {
+            let signalMmd = prepareSignalMmd(analyzeResult);
+            if (DEBUG) console.log('Signal data mmd result = ', signalMmd);
+            if (signalMmd.length > 0) {
+              if (DEBUG) console.log('Sending notification..');
+              //const is = ichimokuScore.scoreSignal(signalData).then(is => console.log(is));
+              //console.log(is)
+              notifyMMD(signalMmd, timeRangeKey, symbol, []);
+              if (DEBUG) console.log('Notification sent.');
+            } else {
+              if (DEBUG) console.log('Signal data is empty - no need to send notification.');
+            }
           }
-
         }
       }
     }

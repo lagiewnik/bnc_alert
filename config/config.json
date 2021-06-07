@@ -11,6 +11,6 @@
             "1d"
         ]
     },
-    "notifyOnlyObservedIchimoku":true,
-    "notifyOnlyObservedMmd":true
+    "notifyOnlyObservedIchimoku": true,
+    "notifyOnlyObservedMmd": false
 }

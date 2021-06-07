@@ -146,7 +146,7 @@ const signal_observed_delete = (req, resp) => {
     try {
             mysqlsignal.deleteSignalObserved(symbol).then(dbd=>{
             console.log(dbd)
-            resp.json({redirect: '/signalsobserved'})
+            resp.json({redirect: req.headers.referer})
         });
     } catch (err) {
         console.log(err)
@@ -278,6 +278,55 @@ const mmdall = (req, resp) => {
     });
     
 }
+
+const mmd_observed = (req, resp) => {
+    
+    // const alerts_repo = new AlertsRepo(dao)
+    const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
+    const iconFolder = "signalicon/64/"
+    const signalresources = JSON.parse(fileContent);
+    //console.log(signalresources)
+    var data;
+    var datadb = [{ "symbol": "DOGEUSDT", "period": "4h", "BuyScore": 4, "SellScore": 1 }];
+    mysqlmmd.getLastObservedSignals().then(data => {
+        //console.log(data)
+        data.sort(function (a, b) {
+            if (a.mmdBuyScore > b.mmdBuyScore) {
+                return -1;
+            }
+            if (a.mmdBuyScore < b.mmdBuyScore) {
+                return 1;
+            }
+            return 0;
+        }
+        )
+        let webdata = []
+        data.map(function (d) {
+            const CrossTenkanKijun_img_id = d.CrossTenkanKijun
+            const crossVSKumo_img_id = d.crossVSKumo
+            const m = new Date(d.startTime + 7200000 )
+            const mstop = new Date(d.stopTime + 7200000)
+            const msend = new Date(d.SendDateMMD + 14400000)
+            webdata.push({
+                "button_function":"delete",
+                "symbol":d.symbol,
+                "period":d.period,
+                "startTime":m.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stopTime":mstop.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "FastVsShortMMD":d.FastVsShortMMD,
+                "FastVsMiddleMMD":d.FastVsMiddleMMD,
+                "ShortVsMiddleMMD":d.ShortVsMiddleMMD,
+                "mmdBuyScore":d.mmdBuyScore,
+                "mmdSellScore":d.mmdSellScore,
+                "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
+            })
+         })
+         //console.log(webdata)
+        resp.render("MmdView",{signals: webdata, observedsymbols: []})
+    });
+    
+}
+
 const signal_getObserved = async (req, resp) => {
     
     // const alerts_repo = new AlertsRepo(dao)
@@ -368,5 +417,6 @@ module.exports = {
     arbitration,
     add_observed_symbol,
     signal_observed_delete,
-    mmdall
+    mmdall,
+    mmd_observed
 }
