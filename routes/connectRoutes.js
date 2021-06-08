@@ -13,12 +13,12 @@ router.post('/signals/:symbol',alertController.add_observed_symbol)
 router.delete('/:id', alertController.alert_delete )
 router.delete('/signalsobserved/:symbol',alertController.signal_observed_delete)
 router.get('/',alertController.alert_getAll)
-router.get('/signalsobserved',alertController.signal_getObserved)
-router.get('/signals',alertController.signal_getAll)
+router.get('/signalsobserved',alertController.ichimoku_getObserved)
+router.get('/signals',alertController.ichimoku_getAll)
 router.get('/arbitration', alertController.arbitration)
 router.get('/mmdall', alertController.mmdall)
 router.get('/mmdobserved', alertController.mmd_observed)
-
+router.get('/allsignals', alertController.signals_getAll)
 
 
 module.exports = router;

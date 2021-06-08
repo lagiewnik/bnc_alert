@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Signals View</title>
+    <title>All Signals View</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
@@ -25,23 +25,35 @@
         <br>
         <div class="container">
 
-            <h1>MMD Sygnały</h1>
+            <h1>Signals</h1>
             <p>Aktualne sygnały</p>
             
             <table id="dptable" class="table sortable">
-                <thead>
+                <thead class="allSignalsHeader">
                     <tr>
                         <th>Observe</th>
                         <th>Symbol</th>
                         <th>Period</th>
                         <th>Od</th>
-                        <th>SendDate</th>
-                        <th>mmdBuyScore</th>
-                        <th>mmdSellScore</th>
-                        <th>FastVsShortMMD</th>
-                        <th>FastVsMiddleMMD</th>
-                        <th>ShortVsMiddleMMD</th>
-                        <th>SendAlert</th>
+                        
+                        <th>mmd Send Date</th>
+                        <th>mmd Buy Score</th>
+                        <th>mmd Sell Score</th>
+                        <th>Fast Vs Short MMD</th>
+                        <th>Fast Vs Middle MMD</th>
+                        <th>Short Vs Middle MMD</th>
+                        <th>Send Date</th>
+                        <th>Buy Score</th>
+                        <th>Sell Score</th>
+                        <th>Cross Tenkan Kijun</th>
+                        <th>cross VS Kumo</th>
+                        <th>Cross Price Kijun</th>
+                        <th>cross Price Chikou</th>
+                        <th>kumo Color</th>
+                        <th>price Vs Kumo</th>
+                        <th>Signal 3Line</th>
+                        <th>Chikou Span Vs Price</th>
+                        
 
                     </tr>
                 </thead>
@@ -55,12 +67,6 @@
                                 <td><span class="dpsym">
                                         <%= sig.symbol %>
                                     </span>
-                                    <span class="price">
-                                        "Price"<%= sig.symbol %>
-                                    </span>
-                                    <span class="RSI">
-                                        RSI:<%= sig.symbol %>
-                                    </span>
                                 </td>
                                 <td><span class="dpaon">
                                         <%= sig.period %>
@@ -68,7 +74,8 @@
                                 <td><span class="dpcurtype">
                                         <%= sig.startTime %>
                                     </span></td>
-                                <td><span class="dpcond">
+                                
+                                    <td><span class="dpcond">
                                         <%= sig.sendDateMMD %>
                                     </span></td>
                                 <td><span class="dpprice1">
@@ -89,6 +96,48 @@
                                 <td><span class="indicator">
                                         <%= sig.ShortVsMiddleMMD %>
                                            
+                                    </span></td>
+                                    <td><span class="dpcond">
+                                        <%= sig.sendDate %>
+                                    </span></td>
+                                <td><span class="dpprice1">
+                                        <%= sig.buyScore %>
+
+                                    </span></td>
+                                <td><span class="dpprice2">
+                                        <%= sig.sellScore %>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.CrossTenkanKijun %>
+                                            <img src="<%= sig.CrossTenkanKijun_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.crossVSKumo %>
+                                            <img src="<%= sig.crossVSKumo_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.CrossPriceKijun %>
+                                            <img src="<%= sig.CrossPriceKijun_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.crossPriceChikou %>
+                                            <img src="<%= sig.crossPriceChikou_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.kumoColor %>
+                                            <img src="<%= sig.kumoColor_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.priceVsKumo %>
+                                            <img src="<%= sig.priceVsKumo_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.Signal3Line %>
+                                            <img src="<%= sig.Signal3Line_img %>" alt>
+                                    </span></td>
+                                <td><span class="indicator">
+                                        <%= sig.ChikouSpanVsPrice %>
+                                            <img src="<%= sig.ChikouSpanVsPrice_img %>" alt>
                                     </span></td>
                             </tr>
                             <% }) %>
@@ -124,7 +173,6 @@
                             <% }) %>
                                 <% } %>
                 </tbody></table>
-                
             </div>
 
 

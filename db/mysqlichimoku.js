@@ -101,7 +101,34 @@ function getLastSignals()
         var connection = con;
 
         var query_str =
-            'select * from ichimokuSignals where (stopTime > (UNIX_TIMESTAMP()-3600)*1000) AND buyScore IS NOT NULL';
+            'select *, IF(symbol in (select * from symbols_observed), 1, 0) as observed from ichimokuSignals where (stopTime > (UNIX_TIMESTAMP()-3600)*1000) AND buyScore IS NOT NULL';
+
+        var query_var = [];
+
+        var query = connection.query(query_str, query_var, function (err, rows, fields) {
+            //if (err) throw err;
+            if (err) {
+                //throw err;
+                console.log(err);
+                logger.info(err);
+                reject(err);
+            }
+            else {
+                resolve(rows);
+                //console.log(rows);
+            }
+        }); //var query = connection.query(query_str, function (err, rows, fields) {
+    });
+}
+
+function getLastAllSignals()
+{
+    //Zwraca sygnały ichimoku $ mmd + kolumnę czy jest observed (0/1)
+    return new Promise(function(resolve, reject){
+        var connection = con;
+
+        var query_str =
+            'select *, IF(symbol in (select * from symbols_observed), 1, 0) as observed from ichimokuSignals where (stopTime > (UNIX_TIMESTAMP()-3600)*1000)';
 
         var query_var = [];
 
@@ -495,6 +522,7 @@ module.exports = {
     replace,
     getLastSignals,
     getLastObservedSignals,
+    getLastAllSignals,
     checkSignalWasSend,
     updateSendSignalStatus,
     updateBuySellScore,

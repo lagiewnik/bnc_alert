@@ -154,7 +154,8 @@ const signal_observed_delete = (req, resp) => {
     }
     
 }
-const signal_getAll = (req, resp) => {
+
+const signals_getAll = (req, resp) => {
     
     // const alerts_repo = new AlertsRepo(dao)
     const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
@@ -162,7 +163,73 @@ const signal_getAll = (req, resp) => {
     const signalresources = JSON.parse(fileContent);
     //console.log(signalresources)
     var data;
-    var datadb = [{ "symbol": "DOGEUSDT", "period": "4h", "BuyScore": 4, "SellScore": 1 }];
+    mysqlsignal.getLastAllSignals().then(data => {
+        //console.log(data)
+        data.sort(function (a, b) {
+            if (a.buyScore > b.buyScore) {
+                return -1;
+            }
+            if (a.buyScore < b.buyScore) {
+                return 1;
+            }
+            return 0;
+        }
+        )
+        let webdata = []
+        data.map(function (d) {
+            const CrossTenkanKijun_img_id = d.CrossTenkanKijun
+            const crossVSKumo_img_id = d.crossVSKumo
+            const m = new Date(d.startTime + 7200000 )
+            const mstop = new Date(d.stopTime + 7200000)
+            const msend = new Date(d.SendDate + 14400000)
+            webdata.push({
+                "button_function":d.observed=='1'?"delete":"add",
+                "symbol":d.symbol,
+                "period":d.period,
+                "startTime":m.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stopTime":mstop.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "CrossTenkanKijun":d.CrossTenkanKijun,
+                "CrossTenkanKijun_img":signalresources.CrossTenkanKijun.hasOwnProperty(CrossTenkanKijun_img_id) ? iconFolder+signalresources.CrossTenkanKijun[CrossTenkanKijun_img_id]["img"]:"",
+                "crossVSKumo":d.crossVSKumo,
+                "crossVSKumo_img":signalresources.crossVSKumo.hasOwnProperty(crossVSKumo_img_id) ? iconFolder+signalresources.crossVSKumo[crossVSKumo_img_id]["img"]:"",
+                "CrossPriceKijun":d.CrossPriceKijun,
+                "CrossPriceKijun_img":signalresources.crossVSKumo.hasOwnProperty(d.CrossPriceKijun) ? iconFolder+signalresources.CrossPriceKijun[d.CrossPriceKijun]["img"]:"",
+                "crossPriceChikou":d.crossPriceChikou,
+                "crossPriceChikou_img":signalresources.crossPriceChikou.hasOwnProperty(d.crossPriceChikou) ? iconFolder+signalresources.crossPriceChikou[d.crossPriceChikou]["img"]:"",
+                "kumoColor":d.kumoColor,
+                "kumoColor_img":signalresources.kumoColor.hasOwnProperty(d.kumoColor) ? iconFolder+signalresources.kumoColor[d.kumoColor]["img"]:"",
+                "priceVsKumo":d.priceVsKumo,
+                "priceVsKumo_img":signalresources.priceVsKumo.hasOwnProperty(d.priceVsKumo) ? iconFolder+signalresources.priceVsKumo[d.priceVsKumo]["img"]:"",
+                "Signal3Line":d.Signal3Line,
+                "Signal3Line_img":signalresources.Signal3Line.hasOwnProperty(d.Signal3Line) ? iconFolder+signalresources.Signal3Line[d.Signal3Line]["img"]:"",
+                "ChikouSpanVsPrice":d.ChikouSpanVsPrice,
+                "ChikouSpanVsPrice_img":signalresources.ChikouSpanVsPrice.hasOwnProperty(d.ChikouSpanVsPrice) ? iconFolder+signalresources.ChikouSpanVsPrice[d.ChikouSpanVsPrice]["img"]:"",
+                "buyScore":d.buyScore,
+                "sellScore":d.sellScore,
+                "sendDate":msend.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "FastVsShortMMD":d.FastVsShortMMD,
+                "FastVsMiddleMMD":d.FastVsMiddleMMD,
+                "ShortVsMiddleMMD":d.ShortVsMiddleMMD,
+                "mmdBuyScore":d.mmdBuyScore,
+                "mmdSellScore":d.mmdSellScore,
+                "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
+            })
+         })
+         //console.log(webdata)
+        resp.render("AllView",{signals: webdata, observedsymbols: []})
+    });
+    
+}
+
+
+const ichimoku_getAll = (req, resp) => {
+    
+    // const alerts_repo = new AlertsRepo(dao)
+    const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
+    const iconFolder = "signalicon/64/"
+    const signalresources = JSON.parse(fileContent);
+    //console.log(signalresources)
+    var data;
     mysqlsignal.getLastSignals().then(data => {
         //console.log(data)
         data.sort(function (a, b) {
@@ -210,12 +277,12 @@ const signal_getAll = (req, resp) => {
             })
          })
          //console.log(webdata)
-        resp.render("SignalsView",{signals: webdata, observedsymbols: []})
+        resp.render("IchimokuView",{signals: webdata, observedsymbols: []})
     });
     // console.log("sygnały z DB pobranie:")
     //console.log(datadb)
     //z mysql
-    //resp.render("SignalsView",{signals: datadb})
+    //resp.render("IchimokuView",{signals: datadb})
     // try {
     //         mysqlcon.getAll().then(dbd=>{datadb=dbd;
     //         resp.render("AlertGenerator", {alerts: datadb})
@@ -239,7 +306,7 @@ const mmdall = (req, resp) => {
     const signalresources = JSON.parse(fileContent);
     //console.log(signalresources)
     var data;
-    var datadb = [{ "symbol": "DOGEUSDT", "period": "4h", "BuyScore": 4, "SellScore": 1 }];
+  
     mysqlmmd.getLastSignals().then(data => {
         //console.log(data)
         data.sort(function (a, b) {
@@ -279,7 +346,7 @@ const mmdall = (req, resp) => {
     
 }
 
-const mmd_observed = (req, resp) => {
+const mmd_observed = (req, resp, ) => {
     
     // const alerts_repo = new AlertsRepo(dao)
     const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
@@ -327,7 +394,7 @@ const mmd_observed = (req, resp) => {
     
 }
 
-const signal_getObserved = async (req, resp) => {
+const ichimoku_getObserved = async (req, resp) => {
     
     // const alerts_repo = new AlertsRepo(dao)
     const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
@@ -385,12 +452,12 @@ const signal_getObserved = async (req, resp) => {
             })
          })
         console.log(observedsymbols)
-        resp.render("SignalsView",{signals: webdata, observedsymbols: observedsymbols})
+        resp.render("IchimokuView",{signals: webdata, observedsymbols: observedsymbols})
     };
     // console.log("sygnały z DB pobranie:")
     //console.log(datadb)
     //z mysql
-    //resp.render("SignalsView",{signals: datadb})
+    //resp.render("IchimokuView",{signals: datadb})
     // try {
     //         mysqlcon.getAll().then(dbd=>{datadb=dbd;
     //         resp.render("AlertGenerator", {alerts: datadb})
@@ -406,17 +473,18 @@ const signal_getObserved = async (req, resp) => {
     //resp.render("AlertGenerator", {alerts: data})
 
 
-//signal_getAll()
+//ichimoku_getAll()
 //alert_getAll()
 module.exports = {
     alert_delete,
     alert_create,
     alert_getAll,
-    signal_getAll,
-    signal_getObserved,
+    ichimoku_getAll,
+    ichimoku_getObserved,
     arbitration,
     add_observed_symbol,
     signal_observed_delete,
     mmdall,
-    mmd_observed
+    mmd_observed,
+    signals_getAll
 }
