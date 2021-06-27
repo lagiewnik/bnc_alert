@@ -50,17 +50,12 @@
                         <% signals.forEach(sig=> { %>
                             <tr>
                                 <td><input symbol="<%= sig.symbol %>" type="button"
-                                        class="btn btn-dark form-control <%= sig.button_function %>-symbol-observed"
-                                        value="<%= sig.button_function %>"></td>
-                                <td><span class="dpsym">
+                                        class="btn btn-dark form-control <%= sig.button_function %>-symbol-observed" value="<%= sig.button_function %>">
+                                </td>
+                                <td class="coin-data"><span class="dpsym">
                                         <%= sig.symbol %>
                                     </span>
-                                    <span class="price">
-                                        "Price"<%= sig.symbol %>
-                                    </span>
-                                    <span class="RSI">
-                                        RSI:<%= sig.symbol %>
-                                    </span>
+                                    <span class="coin-price"></span>
                                 </td>
                                 <td><span class="dpaon">
                                         <%= sig.period %>
@@ -142,6 +137,10 @@
     $(document).ready(function () {
         getallsymbols()
         changeBackgroundColor()
+        let timer = setTimeout(function delayrun() {
+                getPrices();
+                timer = setTimeout(delayrun, 10000);
+            }, 10000);
     })
 
     function getallsymbols() {

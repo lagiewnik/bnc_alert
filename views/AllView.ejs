@@ -7,12 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="/alert.css">
+    <link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="/sorttable.js"></script>
+    <!-- <script src="/sorttable.js"></script> -->
     <script type="text/javascript" src="/tools.js"></script>
+    <script type="text/javascript" src="DataTables/datatables.min.js"></script> 
 </head>
 
 <body>
@@ -31,7 +33,7 @@
             <table id="dptable" class="table sortable">
                 <thead class="allSignalsHeader">
                     <tr>
-                        <th>Observe</th>
+                        <th data-type="@data-sort">Observe</th>
                         <th>Symbol</th>
                         <th>Period</th>
                         <th>Od</th>
@@ -61,12 +63,13 @@
                     <% if (signals.length> 0) { %>
                         <% signals.forEach(sig=> { %>
                             <tr>
-                                <td><input symbol="<%= sig.symbol %>" type="button"
-                                        class="btn btn-dark form-control <%= sig.button_function %>-symbol-observed"
+                                <td><input symbol="<%= sig.symbol %>" type="button" data-sort="<%= sig.button_function %>" sorttable_customkey="<%= sig.button_function %>"
+                                        class=" btn btn-dark form-control <%= sig.button_function %>-symbol-observed"
                                         value="<%= sig.button_function %>"></td>
-                                <td><span class="dpsym">
+                                <td class="coin-data"><span class="dpsym">
                                         <%= sig.symbol %>
                                     </span>
+                                    <span class="coin-price"></span>
                                 </td>
                                 <td><span class="dpaon">
                                         <%= sig.period %>
@@ -185,12 +188,20 @@
 </html>
 <script>
 
+    
 
-
-    $(document).ready(function () {
-        getallsymbols()
-        changeBackgroundColor()
-    })
+        $(document).ready(function () {
+            //getallsymbols()
+            changeBackgroundColor()
+            $('#dptable').DataTable({
+                paging: false,
+                aaSorting: [[0, 'desc']]
+            })
+            let timer = setTimeout(function delayrun() {
+                getPrices();
+                timer = setTimeout(delayrun, 10000);
+            }, 10000);
+        })
 
     function getallsymbols() {
         var ourRequest1 = new XMLHttpRequest();
@@ -228,18 +239,7 @@
         }
         ourRequest1.send();
     }
-    function changeBackgroundColor() {
-        var elements = document.getElementsByClassName("indicator")
-        for (var i = 0; i < elements.length; i++) {
-            var value = parseInt(elements[i].innerText)
-            if (value > 0) {
-                elements[i].parentElement.style.backgroundColor = '#cdfdc3';
-            }
-            else if (value < 0) {
-                elements[i].parentElement.style.backgroundColor = '#ffbfbf';
-            }
-        }
-    }
+    
     $(".delete-symbol-observed").click(function (e) {
 
         var symbol = e.target.getAttribute("symbol");
@@ -306,4 +306,6 @@
                 console.log(err)
             })
     });
+
+    
 </script>

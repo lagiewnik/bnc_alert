@@ -9,7 +9,8 @@ const con = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: "alerts"
+  database: "alerts",
+  timezone: 'utc'
 });
 
 con.connect((err) => {

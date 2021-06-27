@@ -30,7 +30,7 @@ const axiosInstance = axios.create({
   withCredentials: false
 });
 
-const DEBUG = false;
+const DEBUG = true;
 
 const candleTimeRangeMap = new Map();
 //candleTimeRangeMap.set('15m', { timeDuration: 900000, addtionTime: 0});
@@ -287,10 +287,11 @@ async function main() {
           }
 
           if (intervalsMmd.some(interval => interval === timeRangeKey)) {
+            if (DEBUG) console.log('Interwał dla MMD: ' )
             let signalMmd = prepareSignalMmd(analyzeResult);
             if (DEBUG) console.log('Signal data mmd result = ', signalMmd);
             if (signalMmd.length > 0) {
-              if (DEBUG) console.log('Sending notification..');
+              if (DEBUG) console.log('Sending notification..')
               //const is = ichimokuScore.scoreSignal(signalData).then(is => console.log(is));
               //console.log(is)
               notifyMMD(signalMmd, timeRangeKey, symbol, []);

@@ -321,6 +321,7 @@ const mmdall = (req, resp) => {
         )
         let webdata = []
         data.map(function (d) {
+            console.log(d.SendDateMMD)
             const CrossTenkanKijun_img_id = d.CrossTenkanKijun
             const crossVSKumo_img_id = d.crossVSKumo
             const m = new Date(d.startTime + 7200000 )
@@ -340,7 +341,8 @@ const mmdall = (req, resp) => {
                 "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
             })
          })
-         //console.log(webdata)
+         console.log(webdata)
+         
         resp.render("MmdView",{signals: webdata, observedsymbols: []})
     });
     
