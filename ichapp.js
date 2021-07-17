@@ -38,12 +38,12 @@ candleTimeRangeMap.set('1h', { timeDuration: 3600000, addtionTime: 0 });
 //candleTimeRangeMap.set('4h', { timeDuration: 14400000, addtionTime: 0 });
 //candleTimeRangeMap.set('1d', { timeDuration: 86400000, addtionTime: 0 });
 
-const symbolList = readPair(__dirname + '/config/pair.txt');
-//const symbolList = ["CHZUSDT"]
-console.log("Count of symbol: " + symbolList.length);
+ const symbolList = readPair(__dirname + '/config/pair.txt');
+ //const symbolList = ["LTCUSDT"]
+//console.log("Count of symbol: " + symbolList.length);
 
 function candleStickBuildParam(symbol, interval, startTime, endTime, limit = 600) {
-  console.log(`Binance endpoint: ${binanceApiEndpoint}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`)
+  //console.log(`Binance endpoint: ${binanceApiEndpoint}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`)
   return `${binanceApiEndpoint}/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
 }
 
@@ -85,10 +85,10 @@ async function analyzeData(currentPrice, timeRangeKey, symbol) {
 
   const result = ichimokuCloud.calculate(input)
   const mmd_results = mmd_calculate.mmd_calculate(input.close)
-  console.log("MMD avg:" + symbol)
-  console.log(mmd_results)
+  //console.log("MMD avg:" + symbol)
+  //console.log(mmd_results)
   if (responseData.length >= ichimokuInput.spanPeriod + ichimokuInput.displacement) {
-    console.log('Data set size = ', result.length)
+    //console.log('Data set size = ', result.length)
 
     if (DEBUG) console.log('Data set = ', result)
 
@@ -130,12 +130,14 @@ async function analyzeData(currentPrice, timeRangeKey, symbol) {
         "Signal3Line": ichimokuTools.s3line(ichimokuResult.tenkanSen, ichimokuResult.tenkanSenPrev, ichimokuResult.kijunSen, ichimokuResult.kijunSenPrev, ichimokuResult.senkouSpanA, ichimokuResult.senkouSpanAPrev, ichimokuResult.senkouSpanB, ichimokuResult.senkouSpanBPrev),
         "ChikouSpanVsPrice": 9 * Math.sign(parseFloat(currentPrice) - ichimokuResult.priceVSchikouSpan)
       },
-      "mmd_signals": mmd_tools.generate_mmd_signals(ichimokuResult.mmd_avgs)
+      "mmd_signals": mmd_tools.generate_mmd_signals(ichimokuResult.mmd_avgs),
+      "rsi":ichimokuResult.mmd_avgs.rsi[ichimokuResult.mmd_avgs.rsi.length-1],
+      "stochRSI":ichimokuResult.mmd_avgs.stochrsi
     }]
     if (DEBUG) console.log('ichimokuAnalizeResult = ', ichimokuAnalizeResult)
     return ichimokuAnalizeResult;
   } else {
-    console.log('Skipping analyze process, because data set is too small = ', result.length)
+    ////console.log('Skipping analyze process, because data set is too small = ', result.length)
   }
 }
 
@@ -149,7 +151,7 @@ function saveData(analizeResult, timeRangeKey, symbol, file = 1, db = 0) {
       mysqlcon.replace(analizeResult)
     }
     catch (e) {
-      console.log(e);
+      //console.log(e);
     }
   }
 
@@ -183,14 +185,14 @@ function prepareSignalMmd(analizeResult) {
 async function notify(analizeResult, timeRangeKey, symbol, observedSymbols = []) {
   //createMockData(`${dataFolder}signal-${symbol}-${timeRangeKey}.json`, analizeResult)
   const is = ichimokuScore.scoreSignal(analizeResult).then(is => console.log(is));
-  console.log("observedSymbols w notifaju dla symbolu:" + symbol)
-  console.log(observedSymbols)
-  console.log(observedSymbols.some(item => item.symbol === symbol))
+  //console.log("observedSymbols w notifaju dla symbolu:" + symbol)
+  //console.log(observedSymbols)
+  //console.log(observedSymbols.some(item => item.symbol === symbol))
   try {
     mysqlcon.checkSignalWasSend(analizeResult).then(row => {
-      console.log("wiersze juz istniejace: " + row[0].count)
+      //console.log("wiersze juz istniejace: " + row[0].count)
       if (row[0].count == 0) {
-        console.log("do db i wyslij")
+        //console.log("do db i wyslij")
         mysqlcon.replace(analizeResult)
         ichimokuScore.scoreSignal(analizeResult).then(is => {
           mysqlcon.updateBuySellScore(analizeResult, is.buyScore, is.sellScore)
@@ -198,27 +200,27 @@ async function notify(analizeResult, timeRangeKey, symbol, observedSymbols = [])
             telegramSend.sendTelegramRawMsg(is.textMsg)
             mysqlcon.updateSendSignalStatus(analizeResult)
           }
-          console.log(is)
+          //console.log(is)
         });
       }
     })
   }
   catch (e) {
-    console.log(e);
+    //console.log(e);
   }
 }
 
 async function notifyMMD(analizeResult, timeRangeKey, symbol, observedSymbols = []) {
   //createMockData(`${dataFolder}signal-${symbol}-${timeRangeKey}.json`, analizeResult)
   const is = mmdScore.scoreSignal(analizeResult).then(is => console.log(is));
-  console.log("observedSymbols w notifaju dla symbolu:" + symbol)
-  console.log(observedSymbols)
-  console.log(observedSymbols.some(item => item.symbol === symbol))
+  //console.log("observedSymbols w notifaju dla symbolu:" + symbol)
+  //console.log(observedSymbols)
+  //console.log(observedSymbols.some(item => item.symbol === symbol))
   try {
     mysqlconmmd.checkSignalWasSend(analizeResult).then(row => {
-      console.log("wiersze juz istniejace: " + row[0].count)
+      //console.log("wiersze juz istniejace: " + row[0].count)
       if (row[0].count == 0) {
-        console.log("do db i wyslij")
+        //console.log("do db i wyslij")
         mysqlconmmd.replace(analizeResult)
         mmdScore.scoreSignal(analizeResult).then(is => {
           mysqlconmmd.updateBuySellScore(analizeResult, is.buyScore, is.sellScore)
@@ -226,13 +228,13 @@ async function notifyMMD(analizeResult, timeRangeKey, symbol, observedSymbols = 
             telegramSend.sendTelegramRawMsg(is.textMsg)
             mysqlconmmd.updateSendSignalStatus(analizeResult)
           }
-          console.log(is)
+          //console.log(is)
         });
       }
     })
   }
   catch (e) {
-    console.log(e);
+    //console.log(e);
   }
 }
 async function getCurrentPrice(symbol) {
@@ -241,17 +243,17 @@ async function getCurrentPrice(symbol) {
 
 async function main() {
   try {
-    console.log("Symbol list = ", symbolList)
-    console.log("Start execution")
-    console.log(candleTimeRangeMap)
-    console.log(candleTimeRangeMap.values())
+    //console.log("Symbol list = ", symbolList)
+    //console.log("Start execution")
+    //console.log(candleTimeRangeMap)
+    //console.log(candleTimeRangeMap.values())
     //const candleTimeRangeMapKeys = [...candleTimeRangeMap.keys()];
     const candleTimeRangeMapKeys = _.union(intervalsIchimoku, intervalsMmd)
 
     var observedSymbols = mysqldb.getObservedSymbols();
     var obsSymbols = await observedSymbols;
-    console.log("Symbole obeserwowane:")
-    console.log(obsSymbols)
+    //console.log("Symbole obeserwowane:")
+    //console.log(obsSymbols)
     for (let i = 0; i < symbolList.length; i++) {
       let symbol = symbolList[i];
       if (1) console.log('Get price for symbol = ', symbol)
@@ -269,7 +271,7 @@ async function main() {
         if (DEBUG) console.log('Analyze data result = ', analyzeResult);
         if (analyzeResult != null) {
           if (DEBUG) console.log('Saving data..');
-          saveData(analyzeResult, timeRangeKey, symbol, 1, 0);
+          saveData(analyzeResult, timeRangeKey, symbol, 0, 0);
           if (DEBUG) console.log('Data saved.');
 
           if (intervalsIchimoku.some(interval => interval === timeRangeKey)) {
@@ -278,7 +280,7 @@ async function main() {
             if (signalData.length > 0) {
               if (DEBUG) console.log('Sending notification..');
               //const is = ichimokuScore.scoreSignal(signalData).then(is => console.log(is));
-              //console.log(is)
+              ////console.log(is)
               notify(signalData, timeRangeKey, symbol, obsSymbols);
               if (DEBUG) console.log('Notification sent.');
             } else {
@@ -307,9 +309,9 @@ async function main() {
     //telegramMessageRequest(testChannelId, e)
     console.error(e);
   }
-  console.log("before exit")
+  //console.log("before exit")
   await sleep(10000);
-  console.log("after 10 s sleep exit")
+  //console.log("after 10 s sleep exit")
   process.exit(0)
 }
 function sleep(ms) {

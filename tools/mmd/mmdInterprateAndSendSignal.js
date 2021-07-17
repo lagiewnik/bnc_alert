@@ -7,6 +7,8 @@ function scoreSignal(analizeResult) {
         let textMsg = "Price: " + parseFloat(analizeResult[0].currentPrice.toString()) + "\n";
         let textSub = analizeResult[0].symbol + ". ";
         let mmds = analizeResult[0].mmd_signals
+        let stochRSI = analizeResult[0].stochRSI
+        let stochMsg = "d: " + (stochRSI[0].d).toFixed(2) + "\t" + (stochRSI[1].d).toFixed(2) + "\n" + "k: " +(stochRSI[0].k).toFixed(2) + "\t" + (stochRSI[1].k).toFixed(2)
         // sygnał Fast cross Short MMD
         switch (mmds.FastVsShortMMD) {
             case 3: 
@@ -75,8 +77,8 @@ function scoreSignal(analizeResult) {
         }
         
         console.log(BuyScore)
-        textSub = textSub + " "+ BuyScore+" : "+ SellScore + ".      " +analizeResult[0].interval +"\n"
-        textMsg =   textSub + textMsg
+        textSub = textSub + " "+ BuyScore+" : "+ SellScore + ".      " +analizeResult[0].interval + " MMD\n"
+        textMsg =   textSub + textMsg + "StochRSI: \n" + stochMsg
         resolve({"buyScore": BuyScore, "sellScore":SellScore,"textMsg": textMsg})
         
     })

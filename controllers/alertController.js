@@ -11,7 +11,7 @@ const mysqlmmd = require('../db/mysqlmmd.js')
 const arbitration = (req, resp) => {
     try {resp.render("ArbitrageView")} 
     catch (err) {
-    console.log(err)
+    //console.log(err)
     // handle your file not found (or other error) here
 }
 const add_ebserved_symbol = (req, resp) => {
@@ -25,71 +25,72 @@ const alert_getAll = (req, resp) => {
     var datadb;
 
   
-    console.log("alerty z DB pobranie:")
-    console.log(datadb)
+    //console.log("alerty z DB pobranie:")
+    //console.log(datadb)
     //z mysql
     try {
             mysqlcon.getAll().then(dbd=>{datadb=dbd;
             resp.render("AlertGenerator", {alerts: datadb})
-            console.log("Po promisie")
-            console.log(datadb)});
+            //console.log("Po promisie")
+            //console.log(datadb)
+        });
     } catch (err) {
         console.log(err)
         // handle your file not found (or other error) here
     }
 
-    console.log("alerty z DB pobranie:")
-    console.log(datadb)
+    //console.log("alerty z DB pobranie:")
+    //console.log(datadb)
     //resp.render("AlertGenerator", {alerts: data})
 }
 
 const alert_create = (req, resp) => {
     // const alerts_repo = new AlertsRepo(dao)
-    console.log("create exec")
-    console.log(req.body)
+    //console.log("create exec")
+    //console.log(req.body)
     // var fileContent
     // try {
     //     fileContent = JSON.parse(fs.readFileSync(filePath));
     // } catch (err) {
-    //     console.log("JSON parse")
-    //     console.log(err)
+    //     //console.log("JSON parse")
+    //     //console.log(err)
     //     // handle your file not found (or other error) here
     // }
-    // console.log(fileContent)
+    // //console.log(fileContent)
     // fileContent.push(req.body)
-    // console.log(fileContent)
+    // //console.log(fileContent)
 
     //fs.writeFileSync(filePath, JSON.stringify(fileContent, null, 2))
-    //alerts_repo.create(req.body).then(status=>console.log(status))
+    //alerts_repo.create(req.body).then(status=>//console.log(status))
     mysqlcon.create(req.body).then(status=>console.log(status))
     resp.json({redirect: '/'})
 }
 
 const add_observed_symbol = (req, resp) => {
     // const alerts_repo = new AlertsRepo(dao)
-    console.log("observed symbol adding exec")
-    console.log(req.headers.referer)
+    //console.log("observed symbol adding exec")
+    //console.log(req.headers.referer)
     // var fileContent
     // try {
     //     fileContent = JSON.parse(fs.readFileSync(filePath));
     // } catch (err) {
-    //     console.log("JSON parse")
-    //     console.log(err)
+    //     //console.log("JSON parse")
+    //     //console.log(err)
     //     // handle your file not found (or other error) here
     // }
-    // console.log(fileContent)
+    // //console.log(fileContent)
     // fileContent.push(req.body)
-    // console.log(fileContent)
+    // //console.log(fileContent)
 
     //fs.writeFileSync(filePath, JSON.stringify(fileContent, null, 2))
-    //alerts_repo.create(req.body).then(status=>console.log(status))
+    //alerts_repo.create(req.body).then(status=>//console.log(status))
     mysqlcon.create_observed_symbol(req.body.symbol).then(status=>console.log(status))
     //resp.redirect(req.headers.referer);
     resp.json({redirect: req.headers.referer})
 }
 
 const alert_delete = (req, resp) => {
-    //console.log(req)
+    ////console.log(req)
     //const data;
     // const alerts_repo = new AlertsRepo(dao)
     var fileContent 
@@ -97,39 +98,39 @@ const alert_delete = (req, resp) => {
     // try {
     //     fileContent = JSON.parse(fs.readFileSync(filePath));
     // } catch (err) {
-    //     console.log("JSON parse")
-    //     console.log(err)
+    //     //console.log("JSON parse")
+    //     //console.log(err)
     //     // handle your file not found (or other error) here
     // }
     // var tmp = []
-    // console.log("Id delete" + idDelete)
+    // //console.log("Id delete" + idDelete)
 
-    // console.log("wyswietl plik aktualny")
-    // console.log(fileContent)
+    // //console.log("wyswietl plik aktualny")
+    // //console.log(fileContent)
     // fileContent.forEach(element => {
     //     if(element.trid != idDelete){
-    //         console.log("Zostaw w alertach" + element.trid)
+    //         //console.log("Zostaw w alertach" + element.trid)
     //         tmp.push(element)
     //     } 
     // });
-    // console.log(tmp)
+    // //console.log(tmp)
     // try {
     //     alerts_repo.delete(idDelete).then(dbd=>{
-    //         console.log(dbd)
+    //         //console.log(dbd)
     //         resp.json({redirect: '/'})
     //     });
     // } catch (err) {
-    //     console.log(err)
+    //     //console.log(err)
     //     // handle your file not found (or other error) here
     // }
 
     try {
             mysqlcon.deleteRow(idDelete).then(dbd=>{
-            console.log(dbd)
+            //console.log(dbd)
             resp.json({redirect: '/'})
         });
     } catch (err) {
-        console.log(err)
+        //console.log(err)
         // handle your file not found (or other error) here
     }
     // fs.writeFileSync(filePath, JSON.stringify(tmp), null, 2)
@@ -145,11 +146,11 @@ const signal_observed_delete = (req, resp) => {
 
     try {
             mysqlsignal.deleteSignalObserved(symbol).then(dbd=>{
-            console.log(dbd)
+            //console.log(dbd)
             resp.json({redirect: req.headers.referer})
         });
     } catch (err) {
-        console.log(err)
+        //console.log(err)
         // handle your file not found (or other error) here
     }
     
@@ -161,10 +162,10 @@ const signals_getAll = (req, resp) => {
     const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
     const iconFolder = "signalicon/64/"
     const signalresources = JSON.parse(fileContent);
-    //console.log(signalresources)
+    ////console.log(signalresources)
     var data;
     mysqlsignal.getLastAllSignals().then(data => {
-        //console.log(data)
+        ////console.log(data)
         data.sort(function (a, b) {
             if (a.buyScore > b.buyScore) {
                 return -1;
@@ -212,10 +213,11 @@ const signals_getAll = (req, resp) => {
                 "ShortVsMiddleMMD":d.ShortVsMiddleMMD,
                 "mmdBuyScore":d.mmdBuyScore,
                 "mmdSellScore":d.mmdSellScore,
-                "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
+                "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stochRSI":d.stochRSI
             })
          })
-         //console.log(webdata)
+         ////console.log(webdata)
         resp.render("AllView",{signals: webdata, observedsymbols: []})
     });
     
@@ -228,10 +230,10 @@ const ichimoku_getAll = (req, resp) => {
     const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
     const iconFolder = "signalicon/64/"
     const signalresources = JSON.parse(fileContent);
-    //console.log(signalresources)
+    ////console.log(signalresources)
     var data;
     mysqlsignal.getLastSignals().then(data => {
-        //console.log(data)
+        ////console.log(data)
         data.sort(function (a, b) {
             if (a.buyScore > b.buyScore) {
                 return -1;
@@ -273,28 +275,29 @@ const ichimoku_getAll = (req, resp) => {
                 "ChikouSpanVsPrice_img":signalresources.ChikouSpanVsPrice.hasOwnProperty(d.ChikouSpanVsPrice) ? iconFolder+signalresources.ChikouSpanVsPrice[d.ChikouSpanVsPrice]["img"]:"",
                 "buyScore":d.buyScore,
                 "sellScore":d.sellScore,
-                "sendDate":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
+                "sendDate":msend.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stochRSI":d.stochRSI
             })
          })
-         //console.log(webdata)
+         ////console.log(webdata)
         resp.render("IchimokuView",{signals: webdata, observedsymbols: []})
     });
-    // console.log("sygnały z DB pobranie:")
-    //console.log(datadb)
+    // //console.log("sygnały z DB pobranie:")
+    ////console.log(datadb)
     //z mysql
     //resp.render("IchimokuView",{signals: datadb})
     // try {
     //         mysqlcon.getAll().then(dbd=>{datadb=dbd;
     //         resp.render("AlertGenerator", {alerts: datadb})
-    //         console.log("Po promisie")
-    //         console.log(datadb)});
+    //         //console.log("Po promisie")
+    //         //console.log(datadb)});
     // } catch (err) {
-    //     console.log(err)
+    //     //console.log(err)
     //     // handle your file not found (or other error) here
     // }
 
-    // console.log("alerty z DB pobranie:")
-    // console.log(datadb)
+    // //console.log("alerty z DB pobranie:")
+    // //console.log(datadb)
     //resp.render("AlertGenerator", {alerts: data})
 }
 
@@ -304,11 +307,11 @@ const mmdall = (req, resp) => {
     const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
     const iconFolder = "signalicon/64/"
     const signalresources = JSON.parse(fileContent);
-    //console.log(signalresources)
+    ////console.log(signalresources)
     var data;
   
     mysqlmmd.getLastSignals().then(data => {
-        //console.log(data)
+        ////console.log(data)
         data.sort(function (a, b) {
             if (a.mmdBuyScore > b.mmdBuyScore) {
                 return -1;
@@ -321,7 +324,7 @@ const mmdall = (req, resp) => {
         )
         let webdata = []
         data.map(function (d) {
-            console.log(d.SendDateMMD)
+            //console.log(d)
             const CrossTenkanKijun_img_id = d.CrossTenkanKijun
             const crossVSKumo_img_id = d.crossVSKumo
             const m = new Date(d.startTime + 7200000 )
@@ -338,10 +341,11 @@ const mmdall = (req, resp) => {
                 "ShortVsMiddleMMD":d.ShortVsMiddleMMD,
                 "mmdBuyScore":d.mmdBuyScore,
                 "mmdSellScore":d.mmdSellScore,
-                "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
+                "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stochRSI":d.stochRSI
             })
          })
-         console.log(webdata)
+         //console.log(webdata)
          
         resp.render("MmdView",{signals: webdata, observedsymbols: []})
     });
@@ -354,11 +358,11 @@ const mmd_observed = (req, resp, ) => {
     const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
     const iconFolder = "signalicon/64/"
     const signalresources = JSON.parse(fileContent);
-    //console.log(signalresources)
+    ////console.log(signalresources)
     var data;
     var datadb = [{ "symbol": "DOGEUSDT", "period": "4h", "BuyScore": 4, "SellScore": 1 }];
     mysqlmmd.getLastObservedSignals().then(data => {
-        //console.log(data)
+        ////console.log(data)
         data.sort(function (a, b) {
             if (a.mmdBuyScore > b.mmdBuyScore) {
                 return -1;
@@ -387,10 +391,11 @@ const mmd_observed = (req, resp, ) => {
                 "ShortVsMiddleMMD":d.ShortVsMiddleMMD,
                 "mmdBuyScore":d.mmdBuyScore,
                 "mmdSellScore":d.mmdSellScore,
-                "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
+                "sendDateMMD":msend.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stochRSI":d.stochRSI
             })
          })
-         //console.log(webdata)
+         ////console.log(webdata)
         resp.render("MmdView",{signals: webdata, observedsymbols: []})
     });
     
@@ -402,13 +407,13 @@ const ichimoku_getObserved = async (req, resp) => {
     const fileContent = fs.readFileSync(__dirname+"/signalresources.json");
     const iconFolder = "signalicon/64/"
     const signalresources = JSON.parse(fileContent);
-    //console.log(signalresources)
+    ////console.log(signalresources)
     var dataasync = mysqlsignal.getLastObservedSignals()
     var symbolasync = mysqlcon.getObservedSymbols()
     var data = await dataasync
     var observedsymbols = await symbolasync
-    console.log(observedsymbols)
-        //console.log(data)
+    //console.log(observedsymbols)
+        ////console.log(data)
         data.sort(function (a, b) {
             if (a.buyScore > b.buyScore) {
                 return -1;
@@ -450,28 +455,29 @@ const ichimoku_getObserved = async (req, resp) => {
                 "ChikouSpanVsPrice_img":signalresources.ChikouSpanVsPrice.hasOwnProperty(d.ChikouSpanVsPrice) ? iconFolder+signalresources.ChikouSpanVsPrice[d.ChikouSpanVsPrice]["img"]:"",
                 "buyScore":d.buyScore,
                 "sellScore":d.sellScore,
-                "sendDate":msend.toISOString("pl-PL").slice(0,-5).replace("T"," ")
+                "sendDate":msend.toISOString("pl-PL").slice(0,-5).replace("T"," "),
+                "stochRSI":d.stochRSI
             })
          })
-        console.log(observedsymbols)
+        //console.log(observedsymbols)
         resp.render("IchimokuView",{signals: webdata, observedsymbols: observedsymbols})
     };
-    // console.log("sygnały z DB pobranie:")
-    //console.log(datadb)
+    // //console.log("sygnały z DB pobranie:")
+    ////console.log(datadb)
     //z mysql
     //resp.render("IchimokuView",{signals: datadb})
     // try {
     //         mysqlcon.getAll().then(dbd=>{datadb=dbd;
     //         resp.render("AlertGenerator", {alerts: datadb})
-    //         console.log("Po promisie")
-    //         console.log(datadb)});
+    //         //console.log("Po promisie")
+    //         //console.log(datadb)});
     // } catch (err) {
-    //     console.log(err)
+    //     //console.log(err)
     //     // handle your file not found (or other error) here
     // }
 
-    // console.log("alerty z DB pobranie:")
-    // console.log(datadb)
+    // //console.log("alerty z DB pobranie:")
+    // //console.log(datadb)
     //resp.render("AlertGenerator", {alerts: data})
 
 

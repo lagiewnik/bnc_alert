@@ -12,7 +12,7 @@ var gv_allsymprice = {};
             gv_allsymprice_l[ourDatax[k]["symbol"]] = ourDatax[k]["price"];
         }
         gv_allsymprice = gv_allsymprice_l;
-        console.log(gv_allsymprice)
+        //console.log(gv_allsymprice)
     }
     ourRequestx.send();
 }
@@ -31,7 +31,7 @@ function getallsymbols(){
             optionsAsString += "<option value='" + ourData[i]["symbol"] + "'>" + ourData[i]["symbol"] + "</option>";
         }    
         //$('select[name="currency"]' ).append( optionsAsString );
-        console.log(optionsAsString)
+        //console.log(optionsAsString)
     }
     ourRequest1.send();
 }

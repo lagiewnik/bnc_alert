@@ -43,8 +43,8 @@ class AlertRepo {
 
       update(content) {
         const {trid, newGotSend} = content
-        console.log(content)
-        console.log("In content: " + content + "IN DB update trid: " + trid + "gotSend: " + newGotSend)
+        //console.log(content)
+        //console.log("In content: " + content + "IN DB update trid: " + trid + "gotSend: " + newGotSend)
         return this.dao.run(
             `UPDATE alerts SET gotSend = ? WHERE trid = ?`,
             [newGotSend, trid]

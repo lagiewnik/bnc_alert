@@ -16,19 +16,19 @@ const con = mysql.createConnection({
 
 con.connect((err) => {
   if(err){
-    console.log('Error connecting to Db' + process.env.DB_HOST + process.env.DB_USER + process.env.DB_PASSWORD);
+    //console.log('Error connecting to Db' + process.env.DB_HOST + process.env.DB_USER + process.env.DB_PASSWORD);
     return;
   }
-  console.log('Connection established from mysqlichimoku');
+  //console.log('Connection established from mysqlichimoku');
 });
 
 // function getMySQL_connection() {
 //     con.connect((err) => {
 //         if(err){
-//           console.log('Error connecting to Db');
+//           //console.log('Error connecting to Db');
 //           return con;
 //         }
-//         console.log('Connection established');
+//         //console.log('Connection established');
 //       });
 // }
 
@@ -48,13 +48,13 @@ function getLastSignals()
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 logger.info(err);
                 reject(err);
             }
             else {
                 resolve(rows);
-                //console.log(rows);
+                ////console.log(rows);
             }
         }); //var query = connection.query(query_str, function (err, rows, fields) {
     });
@@ -74,13 +74,13 @@ function getLastObservedSignals()
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 logger.info(err);
                 reject(err);
             }
             else {
                 resolve(rows);
-                //console.log(rows);
+                ////console.log(rows);
             }
         }); //var query = connection.query(query_str, function (err, rows, fields) {
     });
@@ -96,23 +96,24 @@ function replace(content) {
         const FastVsShortMMD = content[0].mmd_signals.FastVsShortMMD
         const FastVsMiddleMMD= content[0].mmd_signals.FastVsMiddleMMD
         const ShortVsMiddleMMD= content[0].mmd_signals.ShortVsMiddleMMD
-        
+        const stochrsi = JSON.stringify(content[0].stochRSI)
 
-        var query_str = "INSERT INTO ichimokuSignals (symbol, period, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE symbol=?, period=?, startTime=?, stopTime=?, FastVsShortMMD=?, FastVsMiddleMMD=?, ShortVsMiddleMMD=?;"
 
-        var query_var = [symbol, interval, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD, symbol, interval, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD];
+        var query_str = "INSERT INTO ichimokuSignals (symbol, period, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD, stochRSI) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE symbol=?, period=?, startTime=?, stopTime=?, FastVsShortMMD=?, FastVsMiddleMMD=?, ShortVsMiddleMMD=?, stochRSI=?;"
+
+        var query_var = [symbol, interval, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD, stochrsi, symbol, interval, startTime, stopTime, FastVsShortMMD, FastVsMiddleMMD, ShortVsMiddleMMD, stochrsi];
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 //logger.info(err);
                 reject(err);
             }
             else {
-                console.log("REPLACE db")
-                console.log(fields)
-                console.log(rows);
+                //console.log("REPLACE db")
+                //console.log(fields)
+                //console.log(rows);
                 resolve(rows);
                 
             }
@@ -140,13 +141,13 @@ function checkSignalWasSend(content) {
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 //logger.info(err);
                 reject(err);
             }
             else {
-                console.log(fields)
-                console.log(rows);
+                //console.log(fields)
+                //console.log(rows);
                 resolve(rows);
                 
             }
@@ -171,14 +172,14 @@ function updateSendSignalStatus(content){
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 logger.info(err);
                 reject(err);
             }
             else {
-                console.log("UPDATE sendSignal" + symbol + " " + interval + " " + startTime + " " + stopTime)
-                console.log(fields)
-                console.log(rows);
+                //console.log("UPDATE sendSignal" + symbol + " " + interval + " " + startTime + " " + stopTime)
+                //console.log(fields)
+                //console.log(rows);
                 resolve(rows);
                 
             }
@@ -202,14 +203,14 @@ function updateBuySellScore(content,buyScore,sellScore){
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 logger.info(err);
                 reject(err);
             }
             else {
-                console.log("UPDATE sendSignal" + symbol + " " + interval + " " + startTime + " " + stopTime)
-                console.log(fields)
-                console.log(rows);
+                //console.log("UPDATE sendSignal" + symbol + " " + interval + " " + startTime + " " + stopTime)
+                //console.log(fields)
+                //console.log(rows);
                 resolve(rows);
                 
             }
@@ -229,13 +230,13 @@ function update(content){
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 logger.info(err);
                 reject(err);
             }
             else {
-                console.log(fields)
-                console.log(rows);
+                //console.log(fields)
+                //console.log(rows);
                 resolve(rows);
                 
             }
@@ -248,18 +249,18 @@ function getRecordCount(symbol, interval, startTime, stopTime) {
         var query_str =
         "SELECT count(*) FROM ichimokuSignals WHERE (symbol = ? AND period = ? AND startTime = ? AND stopTime = ?)";
         var query_var = [symbol, interval, startTime, stopTime];
-        console.log(query_var)
+        //console.log(query_var)
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 //logger.info(err);
                 reject(err);
             }
             else {
-                console.log(fields)
-                console.log(rows);
+                //console.log(fields)
+                //console.log(rows);
                 resolve(JSON.parse(JSON.stringify(rows)));
                 
             }
@@ -273,18 +274,18 @@ function getAll() {
         var query_str =
         "SELECT * FROM ichimokuSignals";
         var query_var = [];
-        console.log(query_var)
+        //console.log(query_var)
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 //logger.info(err);
                 reject(err);
             }
             else {
-                console.log(fields)
-                console.log(rows);
+                //console.log(fields)
+                //console.log(rows);
                 resolve(JSON.parse(JSON.stringify(rows)));
                 
             }
@@ -297,18 +298,18 @@ function deleteRow(trid) {
         var query_str =
         "DELETE FROM alerts WHERE trid = ?";
         var query_var = [trid];
-        console.log(query_var)
+        //console.log(query_var)
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 //logger.info(err);
                 reject(err);
             }
             else {
-                console.log(fields)
-                console.log(rows);
+                //console.log(fields)
+                //console.log(rows);
                 resolve(rows);
                 
             }
@@ -322,18 +323,18 @@ function deleteSignalObserved(symbol) {
         var query_str =
         "DELETE FROM symbols_observed WHERE symbol = ?";
         var query_var = [symbol];
-        console.log(query_var)
+        //console.log(query_var)
         var query = connection.query(query_str, query_var, function (err, rows, fields) {
             //if (err) throw err;
             if (err) {
                 //throw err;
-                console.log(err);
+                //console.log(err);
                 //logger.info(err);
                 reject(err);
             }
             else {
-                console.log(fields)
-                console.log(rows);
+                //console.log(fields)
+                //console.log(rows);
                 resolve(rows);
                 
             }
@@ -360,9 +361,9 @@ function deleteSignalObserved(symbol) {
 //     }
 //   ]
 //   checkSignalWasSend(content).then(row=> {
-//       console.log("wiersze juz istniejace: " + row[0].count)
+//       //console.log("wiersze juz istniejace: " + row[0].count)
 //       if(row[0].count == 0){
-//         console.log("do db i wyslij")
+//         //console.log("do db i wyslij")
 //         replace(content)
 //         updateSendSignalStatus(content)
 //       } 
@@ -370,28 +371,28 @@ function deleteSignalObserved(symbol) {
   //replace(content)
   //updateSendSignalStatus(content)
 // create({trid:3512556532,symbol:"ETHUSDT",alertOn:"ltt",currency:"USD",condition:"condition",price1:188448.23,price2:300333.12333,gotSend:1}).then(row=>{
-//     console.log(row)
+//     //console.log(row)
 // })
 
-//update({trid:3512556532, newGotSend:9}).then(row=>console.log(row))
-//deleteRow(9123).then(x=>console.log("DELETE: "))
-//getAll().then(res=>console.log(res))
+//update({trid:3512556532, newGotSend:9}).then(row=>//console.log(row))
+//deleteRow(9123).then(x=>//console.log("DELETE: "))
+//getAll().then(res=>//console.log(res))
 
 // //getLastRecord('ziom')
 //     .then(function(rows){
-//         console.log(rows)
+//         //console.log(rows)
 //         if (rows.length > 2) {
-//             console.log("action");
+//             //console.log("action");
 //         }
 //     })
-//     .error(function(e){console.log("Error handler " + e)})
-//     .catch(function(e){console.log("Catch handler " + e)});
+//     .error(function(e){//console.log("Error handler " + e)})
+//     .catch(function(e){//console.log("Catch handler " + e)});
 
 // con.end((err) => {
 //   // The connection is terminated gracefully
 //   // Ensures all remaining queries are executed
 //   // Then sends a quit packet to the MySQL server.
-//   console.log("connection close")
+//   //console.log("connection close")
 // });
 ////getRecordCount("BTCSUSDT", "1d", 1616457600000, 1616543999999)
 //getAll()
@@ -413,9 +414,9 @@ function deleteSignalObserved(symbol) {
 //       }
 //     }
 //   ])
-getLastSignals().then(x=>console.log(x))
+//getLastSignals().then(x=>//console.log(x))
 
-console.log(getLastSignals())
+//console.log(getLastSignals())
 module.exports = {
     getAll,
     deleteRow,

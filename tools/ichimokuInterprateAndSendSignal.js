@@ -6,6 +6,8 @@ function scoreSignal(analizeResult) {
         let SellScore = 0
         let textMsg = "Price: " + parseFloat(analizeResult[0].currentPrice.toString()) + "\n";
         let textSub = analizeResult[0].symbol + ". ";
+        let stochRSI = analizeResult[0].stochRSI
+        let stochMsg = "d: " + (stochRSI[0].d).toFixed(2) + "\t" + (stochRSI[1].d).toFixed(2) + "\n" + "k: " +(stochRSI[0].k).toFixed(2) + "\t" + (stochRSI[1].k).toFixed(2)
         
         // sygnał CrossTenkanKijun - przcięcie i położenie przecięcia
         switch (analizeResult[0].Signals.CrossTenkanKijun) {
@@ -159,8 +161,8 @@ function scoreSignal(analizeResult) {
             default:        
         }
         console.log(BuyScore)
-        textSub = textSub + " "+ BuyScore+" : "+ SellScore + ".      " +analizeResult[0].interval +"\n"
-        textMsg =   textSub + textMsg
+        textSub = textSub + " "+ BuyScore+" : "+ SellScore + ".      " +analizeResult[0].interval +" Ichimoku\n"
+        textMsg =   textSub + textMsg + "StochRSI: \n" + stochMsg
         resolve({"buyScore": BuyScore, "sellScore":SellScore,"textMsg": textMsg})
         
     })

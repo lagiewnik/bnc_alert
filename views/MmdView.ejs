@@ -11,8 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="/sorttable.js"></script>
-    <script type="text/javascript" src="/tools.js"></script>
+    <%- include('head.ejs') %>
 </head>
 
 <body>
@@ -31,7 +30,7 @@
             <table id="dptable" class="table sortable">
                 <thead>
                     <tr>
-                        <th>Observe</th>
+                        <th data-type="@data-sort">Observe</th>
                         <th>Symbol</th>
                         <th>Period</th>
                         <th>Od</th>
@@ -41,7 +40,7 @@
                         <th>FastVsShortMMD</th>
                         <th>FastVsMiddleMMD</th>
                         <th>ShortVsMiddleMMD</th>
-                        <th>SendAlert</th>
+                        <th>stochRSI</th>
 
                     </tr>
                 </thead>
@@ -84,6 +83,16 @@
                                 <td><span class="indicator">
                                         <%= sig.ShortVsMiddleMMD %>
                                            
+                                    </span></td>
+                                    <td><span class="stochRSI">
+                                        <table>
+                                            <tr>
+                                                <td><%= (JSON.parse(sig.stochRSI)[0].d).toFixed(2) %></td>
+                                                <td><%= JSON.parse(sig.stochRSI)[1].d.toFixed(2) %></td></tr>
+                                        <tr><td><%= JSON.parse(sig.stochRSI)[0].k.toFixed(2) %></td>
+                                            <td><%= JSON.parse(sig.stochRSI)[1].k.toFixed(2) %></td></tr>
+                                        
+                                    </table>
                                     </span></td>
                             </tr>
                             <% }) %>
@@ -137,6 +146,8 @@
     $(document).ready(function () {
         getallsymbols()
         changeBackgroundColor()
+        colorizeStochRSI()
+        tabletool()
         let timer = setTimeout(function delayrun() {
                 getPrices();
                 timer = setTimeout(delayrun, 10000);
@@ -168,7 +179,7 @@
                 return 0;
             }
             )
-            console.log(ourData)
+            //console.log(ourData)
             //gv_symbols = gv_symbols.concat(ourData);
             var optionsAsString = '';
             //document.getElementById('currentprice').value = ourData[0]["price"];
@@ -200,11 +211,11 @@
             method: "DELETE"
         }).then((response) => response.json())
             .then((data) => {
-                console.log(data)
+                //console.log(data)
                 window.location.href = data.redirect
             })
             .catch((err) => {
-                console.log(err)
+                //console.log(err)
             })
 
 
@@ -212,11 +223,11 @@
 
     $(".add-symbol-observed").click(function (e) {
         var symbol = e.target.getAttribute("symbol");
-        console.log("symbol data: " + symbol)
+        //console.log("symbol data: " + symbol)
 
         dataToSend = JSON.stringify({ "symbol": symbol });
-        console.log("datasend create alert:");
-        console.log(dataToSend);
+        //console.log("datasend create alert:");
+        //console.log(dataToSend);
         fetch('/signals/' + symbol, {
             method: "POST",
             headers: {
@@ -226,21 +237,21 @@
             body: dataToSend
         }).then((response) => response.json())
             .then((data) => {
-                console.log(data)
+                //console.log(data)
                 window.location.href = data.redirect
             })
             .catch((err) => {
-                console.log(err)
+                //console.log(err)
             })
     });
 
     $("#symboladd").click(function (e) {
         var symbol = $("#currency option:selected").text().trim();
-        console.log("symbol data: " + symbol)
+        //console.log("symbol data: " + symbol)
 
         dataToSend = JSON.stringify({ "symbol": symbol });
-        console.log("datasend create alert:");
-        console.log(dataToSend);
+        //console.log("datasend create alert:");
+        //console.log(dataToSend);
         fetch('/signals/' + symbol, {
             method: "POST",
             headers: {
@@ -250,11 +261,11 @@
             body: dataToSend
         }).then((response) => response.json())
             .then((data) => {
-                console.log(data)
+                //console.log(data)
                 window.location.href = data.redirect
             })
             .catch((err) => {
-                console.log(err)
+                //console.log(err)
             })
     });
 </script>
