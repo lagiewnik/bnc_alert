@@ -3,7 +3,7 @@ var fs = require('fs');
 const { toNamespacedPath } = require('path');
 const filePath = './config/alerts.json';
 const Promise = require('bluebird')
-
+const configFilePath ='./config/config.json'
 const mysqlcon = require('../db/mysqldao.js')
 const mysqlsignal = require('../db/mysqlichimoku.js')
 const mysqlmmd = require('../db/mysqlmmd.js')
@@ -34,6 +34,65 @@ const alert_getAll = (req, resp) => {
             //console.log("Po promisie")
             //console.log(datadb)
         });
+    } catch (err) {
+        console.log(err)
+        // handle your file not found (or other error) here
+    }
+
+    //console.log("alerty z DB pobranie:")
+    //console.log(datadb)
+    //resp.render("AlertGenerator", {alerts: data})
+}
+
+const settings_change = (req, resp) => {
+    console.log("OK SETTINGS CHANGE START")
+    var fileContent
+    try {
+        fileContent = JSON.parse(fs.readFileSync(configFilePath));
+    } catch (err) {
+        console.log("JSON parse")
+        console.log(err)
+        //handle your file not found (or other error) here
+    }
+    var changedValue = !fileContent[req.body.settingName]
+    console.log(req.body)
+    fileContent[req.body.settingName] = changedValue
+    // //console.log(fileContent)
+
+    fs.writeFileSync(configFilePath, JSON.stringify(fileContent, null, 2))
+    
+    resp.json({redirect: '/settings'})
+}
+
+const settings_getAll = (req, resp) => {
+    // const alerts_repo = new AlertsRepo(dao)
+    var fileContent
+    try {
+        fileContent = JSON.parse(fs.readFileSync(configFilePath));
+    } catch (err) {
+        console.log("JSON parse")
+        console.log(err)
+        // handle your file not found (or other error) here
+    }
+    var data;
+    var onlyObsIch = fileContent.notifyOnlyObservedIchimoku?"checked":""
+    var onlyObsMMD = fileContent.notifyOnlyObservedMmd?"checked":""
+    console.log("ICH" + onlyObsIch)
+
+    jsonToEjs = '[{"setting":"notifyOnlyObservedIchimoku", "checked":"' + onlyObsIch.toString() +'"}, {"setting":"notifyOnlyObservedMmd", "checked":"' + onlyObsMMD.toString() +'"}]'
+    console.log(jsonToEjs)
+    var datadb = JSON.parse(jsonToEjs);
+
+  
+    //console.log("alerty z DB pobranie:")
+    console.log(datadb)
+    //z mysql
+    try {
+            
+            resp.render("settings", {settings: datadb})
+            console.log("Po promisie")
+            console.log(datadb)
+        
     } catch (err) {
         console.log(err)
         // handle your file not found (or other error) here
@@ -494,5 +553,7 @@ module.exports = {
     signal_observed_delete,
     mmdall,
     mmd_observed,
-    signals_getAll
+    signals_getAll,
+    settings_getAll,
+    settings_change
 }

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Settings</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/alert.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+</head>
+
+<body>
+    <%- include('navbar.ejs') %>
+    <div class="container">
+
+        <h1>Settings</h1>
+
+
+        
+        <br>
+        <table id="dptable" class="table">
+            <thead>
+                <tr>
+                    <th>On/Off</th>
+                    <th>Setting</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <% console.log("setting") %>
+                <% if (settings.length> 0) { %>
+                    <% settings.forEach(setting=> { %>
+                        <% console.log(setting) %>
+                        <tr >
+                            <td><input class="changeSetting" id=<%=setting.setting %> type="checkbox" name=<%=setting.setting %> <%=setting.checked %> ></td>
+                            <td><span class="dpsym"><%= setting.setting %> </span></td>
+                            
+                        </tr>
+                        <% }) %>
+                            <% } %>
+            </tbody>
+        </table>
+
+        <br />
+        <br />
+
+
+    </div>
+    <footer>
+    </footer>
+</body>
+<script>
+    $(".changeSetting").click(function (element) {
+            var settingName = element.target.id;
+            
+            
+            dataToSend = JSON.stringify({  "settingName":settingName });
+            // console.log("datasend create alert:");
+            // console.log(dataToSend);
+            fetch('/settings/'+ settingName, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: dataToSend
+            }).then((response) => response.json())
+                .then((data) => {
+                    console.log(data)
+                    window.location.href = data.redirect
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        });
+
+</script>
+
+
+</html>

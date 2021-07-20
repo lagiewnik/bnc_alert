@@ -1,16 +1,17 @@
 {
-    "intervals": {
-        "ichimoku": [
-            "4h",
-            "1d"
-        ],
-        "mmd": [
-            "15m",
-            "1h",
-            "4h",
-            "1d"
-        ]
-    },
-    "notifyOnlyObservedIchimoku": false,
-    "notifyOnlyObservedMmd": false
+  "intervals": {
+    "ichimoku": [
+      "4h",
+      "1d"
+    ],
+    "mmd": [
+      "15m",
+      "1h",
+      "4h",
+      "1d"
+    ]
+  },
+  "notifyOnlyObservedIchimoku": true,
+  "notifyOnlyObservedMmd": true,
+  "undefined": true
 }

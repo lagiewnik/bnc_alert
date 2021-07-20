@@ -19,6 +19,7 @@ router.get('/arbitration', alertController.arbitration)
 router.get('/mmdall', alertController.mmdall)
 router.get('/mmdobserved', alertController.mmd_observed)
 router.get('/allsignals', alertController.signals_getAll)
-
+router.get('/settings', alertController.settings_getAll)
+router.post('/settings/:settingName',alertController.settings_change)
 
 module.exports = router;
